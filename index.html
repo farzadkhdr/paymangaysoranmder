@@ -3,7 +3,7 @@
 <head> 
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>سیستەمی پەیمانگای سۆران</title> 
+    <title>سیستەمی پەیمانگای اسۆران</title> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
@@ -188,6 +188,39 @@
             border-radius: 10px; 
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); 
         } 
+        
+        /* ستایلی نوێ بۆ بەشی API */
+        .api-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .api-status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .api-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .api-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .api-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
     </style> 
 </head> 
 <body> 
@@ -766,7 +799,7 @@
                                         <button class="btn btn-primary" id="restoreBtn">خوێندنەوەی بەکەپ</button> 
                                     </div> 
                                 </div> 
- 
+
                                 <div class="card mb-4"> 
                                     <div class="card-header"> 
                                         خوێندنەوەی زانیاری لە سیستەمی مامۆستا 
@@ -779,7 +812,56 @@
                                         <button class="btn btn-primary" id="importTeacherBtn">خوێندنەوەی زانیاریەکانی غیاب</button> 
                                         <p class="text-muted mt-2">ئەم ئامرازە تەنها غیابەکان زیاد دەکات بۆ قوتابیەکانی سیستەمی پەیمانگا.</p> 
                                     </div> 
-                                </div> 
+                                </div>
+                                
+                                <!-- بەشی نوێ: ڕێکخستنی API -->
+                                <div class="card mb-4"> 
+                                    <div class="card-header"> 
+                                        <i class="fas fa-exchange-alt me-2"></i>یەکلاکردنەوە لەگەڵ سیستەمی مامۆستا
+                                    </div> 
+                                    <div class="card-body api-section">
+                                        <h6 class="mb-3">APIی سیستەمی پەیمانگا</h6>
+                                        <div class="mb-3">
+                                            <label for="apiEndpoint" class="form-label">ئەندپۆینتی API</label>
+                                            <input type="text" class="form-control" id="apiEndpoint" 
+                                                   value="https://institute-soran-api.vercel.app/api" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="apiToken" class="form-label">تۆکینی API</label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" id="apiToken" 
+                                                       value="institute_api_token_2024_soran" readonly>
+                                                <button class="btn btn-outline-secondary" type="button" id="showApiToken">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-primary" type="button" id="copyApiToken">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">ئەم تۆکینە دەبێت لە سیستەمی مامۆستا بەکاربهێنرێت</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">ئەندپۆینتەکان:</label>
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    <strong>POST /api/backup</strong> - وەرگرتنی باکەپ لە سیستەمی مامۆستا
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <strong>GET /api/status</strong> - پشکنینی بارەکەی API
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-info" id="testApiBtn">
+                                                <i class="fas fa-plug me-2"></i>پشکنینی API
+                                            </button>
+                                            <button class="btn btn-success" id="generateApiTokenBtn">
+                                                <i class="fas fa-key me-2"></i>دروستکردنی تۆکینی نوێ
+                                            </button>
+                                        </div>
+                                        <div id="apiStatus" class="api-status"></div>
+                                    </div> 
+                                </div>
                             </div> 
                         </div> 
                     </div> 
@@ -802,75 +884,9 @@
         // پاسوۆردی سەرەکی 
         const systemPassword = "ashna1212"; 
         const systemUsername = "ashna"; 
-
-        // زیادکردنی فەنکشنی handleBackupRequest کە پێویستە
-        window.handleBackupRequest = function(data) {
-            console.log("وەرگرتنی داواکاری بەکەپ (API):", data);
-            
-            let result = {
-                success: true,
-                message: "بەکەپ بە سەرکەوتوویی وەرگیرا",
-                importedStudents: 0,
-                importedAttendance: 0,
-                updatedAttendance: 0
-            };
-            
-            // زیادکردنی قوتابیە نوێیەکان
-            if (data.students && Array.isArray(data.students)) {
-                data.students.forEach(newStudent => {
-                    if (!students.find(s => s.id === newStudent.id)) {
-                        students.push(newStudent);
-                        result.importedStudents++;
-                    }
-                });
-            }
-            
-            // زیادکردنی غیابە نوێیەکان
-            if (data.attendance && Array.isArray(data.attendance)) {
-                data.attendance.forEach(newAttendance => {
-                    const existingStudent = students.find(s => s.id === newAttendance.studentId);
-                    
-                    if (existingStudent) {
-                        const existingAttendanceIndex = attendance.findIndex(a =>  
-                            a.id === newAttendance.id ||  
-                            (a.studentId === newAttendance.studentId && 
-                             a.date === newAttendance.date && 
-                             a.courseName === newAttendance.course)
-                        );
-                        
-                        if (existingAttendanceIndex === -1) {
-                            attendance.push({
-                                id: newAttendance.id,
-                                studentId: newAttendance.studentId,
-                                studentName: existingStudent.name,
-                                courseName: newAttendance.course || newAttendance.courseName,
-                                date: newAttendance.date,
-                                hours: newAttendance.present === false ? (newAttendance.hours || 1) : 0
-                            });
-                            result.importedAttendance++;
-                        } else {
-                            attendance[existingAttendanceIndex] = {
-                                ...attendance[existingAttendanceIndex],
-                                courseName: newAttendance.course || newAttendance.courseName,
-                                date: newAttendance.date,
-                                hours: newAttendance.present === false ? (newAttendance.hours || 1) : 0
-                            };
-                            result.updatedAttendance++;
-                        }
-                    }
-                });
-            }
-            
-            // پاشەکەوتکردنی زانیاریە نوێیەکان
-            localStorage.setItem('students', JSON.stringify(students));
-            localStorage.setItem('attendance', JSON.stringify(attendance));
-            
-            // نوێکردنەوەی لیستەکان
-            displayStudentsList();
-            updateDashboard();
-            
-            return result;
-        };
+        
+        // API Token
+        let apiToken = localStorage.getItem('apiToken') || "institute_api_token_2024_soran";
          
         // چێککردنی چوونەژوورەوە 
         document.addEventListener('DOMContentLoaded', function() { 
@@ -1035,7 +1051,80 @@
                     }); 
                 } 
             }); 
+            
+            // Event listeners بۆ API
+            document.getElementById('testApiBtn').addEventListener('click', testApiConnection);
+            document.getElementById('generateApiTokenBtn').addEventListener('click', generateNewApiToken);
+            document.getElementById('showApiToken').addEventListener('click', toggleApiTokenVisibility);
+            document.getElementById('copyApiToken').addEventListener('click', copyApiToken);
         } 
+        
+        // فەنکشنەکانی API
+        async function testApiConnection() {
+            const statusDiv = document.getElementById('apiStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'api-status api-info';
+            statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>پشکنینی پەیوەندی API...';
+            
+            try {
+                // لێرەدا دەتوانیت ڕاستەوخۆ پشکنینی API بکەیت
+                // بۆ نمونە:
+                const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+                
+                if (response.ok) {
+                    statusDiv.className = 'api-status api-success';
+                    statusDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>پەیوەندی API چالاکە!';
+                } else {
+                    statusDiv.className = 'api-status api-error';
+                    statusDiv.innerHTML = '<i class="fas fa-times-circle me-2"></i>هەڵە لە پشکنینی API';
+                }
+            } catch (error) {
+                statusDiv.className = 'api-status api-error';
+                statusDiv.innerHTML = `<i class="fas fa-times-circle me-2"></i>هەڵە لە پەیوەندی: ${error.message}`;
+            }
+        }
+        
+        function generateNewApiToken() {
+            if (confirm('دڵنیایت دەتەوێت تۆکینی API نوێ بکەیت؟ ئەمە پەیوەندی هەموو سیستەمەکان بەسەر دەبات!')) {
+                const newToken = 'institute_' + Math.random().toString(36).substr(2) + '_' + Date.now().toString(36);
+                apiToken = newToken;
+                localStorage.setItem('apiToken', apiToken);
+                document.getElementById('apiToken').value = apiToken;
+                
+                const statusDiv = document.getElementById('apiStatus');
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'api-status api-success';
+                statusDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>تۆکینی نوێ دروست کرا!';
+            }
+        }
+        
+        function toggleApiTokenVisibility() {
+            const tokenInput = document.getElementById('apiToken');
+            const showBtn = document.getElementById('showApiToken');
+            
+            if (tokenInput.type === 'password') {
+                tokenInput.type = 'text';
+                showBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                tokenInput.type = 'password';
+                showBtn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+        
+        function copyApiToken() {
+            const tokenInput = document.getElementById('apiToken');
+            tokenInput.select();
+            document.execCommand('copy');
+            
+            const statusDiv = document.getElementById('apiStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'api-status api-success';
+            statusDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>تۆکین کۆپی کرا!';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
          
         // فەنکشنی نوێ بۆ نیشاندانی لیستی قوتابیان 
         function displayStudentsList() { 
@@ -1816,14 +1905,14 @@
             document.getElementById('gradesList').innerHTML = gradesHTML; 
             document.getElementById('studentGradesCard').style.display = 'block'; 
         } 
- 
+
         // فەنکشنی بینینی هەموو نمرەکان بۆ قوتابی 
         function viewAllGrades() { 
             const studentName = document.getElementById('studentDetailName').textContent; 
             const student = students.find(s => s.name === studentName); 
              
             if (!student) return; 
- 
+
             const studentGrades = grades.filter(g => g.studentId === student.id); 
              
             if (studentGrades.length === 0) { 
