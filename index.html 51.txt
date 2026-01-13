@@ -1,0 +1,2105 @@
+<!DOCTYPE html> 
+<html lang="ku" dir="rtl"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>سیستەمی پەیمانگای اسۆران</title> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
+    <style> 
+        :root { 
+            --primary: #010101; 
+            --success: #1cc88a; 
+            --info: #0e0d0d; 
+            --warning: #f6c23e; 
+            --danger: #e74a3b; 
+            --secondary: #858796; 
+            --light: #000204; 
+            --dark: #000000; 
+        } 
+         
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f8f9fc; 
+            color: #333; 
+        } 
+         
+        .sidebar { 
+            min-height: 100vh; 
+            background: linear-gradient(180deg, var(--primary) 0%, #224abe 100%); 
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); 
+        } 
+         
+        .sidebar .nav-link { 
+            color: rgb(255, 255, 255); 
+            padding: 1rem; 
+            font-weight: 500; 
+        } 
+         
+        .sidebar .nav-link:hover { 
+            color: #e9e4e4; 
+            background-color: rgba(255, 255, 255, 0.1); 
+        } 
+         
+        .sidebar .nav-link.active { 
+            color: #f5f3f3; 
+            background-color: rgba(255, 255, 255, 0.2); 
+        } 
+         
+        .sidebar-heading { 
+            color: rgba(255, 255, 255, 0.4); 
+            padding: 0 1rem; 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+        } 
+         
+        .navbar { 
+            background-color: #fff; 
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1); 
+        } 
+         
+        .card { 
+            border: none; 
+            border-radius: 0.35rem; 
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1); 
+        } 
+         
+        .card-header { 
+            background-color: #f8f9fc; 
+            border-bottom: 1px solid #e3e6f0; 
+            font-weight: 700; 
+        } 
+         
+        .bg-gradient-primary { 
+            background: linear-gradient(180deg, var(--primary) 10%, #224abe 100%); 
+        } 
+         
+        .bg-gradient-success { 
+            background: linear-gradient(180deg, var(--success) 10%, #13855c 100%); 
+        } 
+         
+        .bg-gradient-info { 
+            background: linear-gradient(180deg, var(--info) 10%, #258391 100%); 
+        } 
+         
+        .bg-gradient-warning { 
+            background: linear-gradient(180deg, var(--warning) 10%, #c29d30 100%); 
+        } 
+         
+        h1, h2, h3, h4, h5, h6 { 
+            color: var(--dark); 
+        } 
+         
+        .form-control:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 0.2rem rgb(3, 3, 3); 
+        } 
+         
+        .btn-primary { 
+            background-color: var(--primary); 
+            border-color: var(--primary); 
+        } 
+         
+        .btn-primary:hover { 
+            background-color: #080809; 
+            border-color: #000001; 
+        } 
+         
+        .search-results { 
+            max-height: 200px; 
+            overflow-y: auto; 
+            border: 1px solid #ddd; 
+            border-radius: 0.25rem; 
+            display: none; 
+            position: absolute; 
+            width: 100%; 
+            z-index: 1000; 
+            background: white; 
+        } 
+         
+        .search-item { 
+            padding: 8px 12px; 
+            cursor: pointer; 
+            border-bottom: 1px solid #eee; 
+        } 
+         
+        .search-item:hover { 
+            background-color: #f8f9fa; 
+        } 
+         
+        .section { 
+            display: none; 
+        } 
+         
+        .section.active { 
+            display: block; 
+        } 
+         
+        .dashboard-card { 
+            border-left: 0.25rem solid; 
+            transition: transform 0.3s; 
+        } 
+         
+        .dashboard-card:hover { 
+            transform: translateY(-5px); 
+        } 
+         
+        .text-primary { 
+            color: var(--primary) !important; 
+        } 
+         
+        .border-left-primary { 
+            border-left-color: var(--primary) !important; 
+        } 
+         
+        .border-left-success { 
+            border-left-color: var(--success) !important; 
+        } 
+         
+        .border-left-info { 
+            border-left-color: var(--info) !important; 
+        } 
+         
+        .border-left-warning { 
+            border-left-color: var(--warning) !important; 
+        } 
+         
+        .student-photo { 
+            width: 120px; 
+            height: 120px; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            border: 3px solid var(--primary); 
+        } 
+         
+        .table th { 
+            border-top: none; 
+            font-weight: 700; 
+            color: var(--dark); 
+        } 
+         
+        .login-container { 
+            max-width: 400px; 
+            margin: 100px auto; 
+            padding: 20px; 
+            background: rgb(243, 239, 239); 
+            border-radius: 10px; 
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); 
+        } 
+    </style> 
+</head> 
+<body> 
+    <!-- پەڕەی چوونەژوورەوە --> 
+    <div id="loginPage" class="container"> 
+        <div class="login-container"> 
+            <h2 class="text-center mb-4">چوونەژوورەوە بۆ سیستەمی پەیمانگای سۆران</h2> 
+            <form id="loginForm"> 
+                <div class="mb-3"> 
+                    <label for="username" class="form-label">ناوی بەکارهێنەر</label> 
+                    <input type="text" class="form-control" id="username" required> 
+                </div> 
+                <div class="mb-3"> 
+                    <label for="password" class="form-label">پاسوۆرد</label> 
+                    <input type="password" class="form-control" id="password" required> 
+                </div> 
+                <button type="submit" class="btn btn-primary w-100">چوونەژوورەوە</button> 
+            </form> 
+        </div> 
+    </div> 
+ 
+    <!-- پەڕەی سەرەکی --> 
+    <div id="mainPage" style="display: none;"> 
+        <!-- ناوەڕۆکی سەرەوە --> 
+        <nav class="navbar navbar-expand navbar-light"> 
+            <div class="container-fluid"> 
+                <button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggle"> 
+                    <i class="fa fa-bars"></i> 
+                </button> 
+                <a class="navbar-brand" href="#"> 
+                    <i class="fas fa-graduation-cap me-2"></i> 
+                    پەیمانگای سۆران 
+                </a> 
+                <ul class="navbar-nav ms-auto"> 
+                    <li class="nav-item dropdown"> 
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"> 
+                            <i class="fas fa-user-circle fa-fw"></i> 
+                            <span id="userName">ئاشنا</span> 
+                        </a> 
+                        <ul class="dropdown-menu dropdown-menu-end"> 
+                            <li><a class="dropdown-item" href="#" onclick="showSection('settingsSection')"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i> ڕێکخستن</a></li> 
+                            <li><hr class="dropdown-divider"></li> 
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> دەرچوون</a></li> 
+                        </ul> 
+                    </li> 
+                </ul> 
+            </div> 
+        </nav> 
+ 
+        <div class="container-fluid"> 
+            <div class="row"> 
+                <!-- لیستەی تەنیشت --> 
+                <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse" id="sidebarMenu"> 
+                    <div class="position-sticky pt-3"> 
+                        <ul class="nav flex-column"> 
+                            <li class="nav-item"> 
+                                <a class="nav-link active" href="#" onclick="showSection('dashboardSection')"> 
+                                    <i class="fas fa-tachometer-alt me-2"></i> 
+                                    داشبۆرد 
+                                </a> 
+                            </li> 
+                            <li class="nav-item"> 
+                                <a class="nav-link" href="#" onclick="showSection('studentsSection')"> 
+                                    <i class="fas fa-users me-2"></i> 
+                                    قوتابیان 
+                                </a> 
+                            </li> 
+                            <li class="nav-item"> 
+                                <a class="nav-link" href="#" onclick="showSection('gradesSection')"> 
+                                    <i class="fas fa-chart-bar me-2"></i> 
+                                    نمرەکان 
+                                </a> 
+                            </li> 
+                            <li class="nav-item"> 
+                                <a class="nav-link" href="#" onclick="showSection('attendanceSection')"> 
+                                    <i class="fas fa-clipboard-list me-2"></i> 
+                                    غیاب 
+                                </a> 
+                            </li> 
+                            <li class="nav-item"> 
+                                <a class="nav-link" href="#" onclick="showSection('studentInfoSection')"> 
+                                    <i class="fas fa-user-graduate me-2"></i> 
+                                    زانیاری قوتابی 
+                                </a> 
+                            </li> 
+                            <li class="nav-item"> 
+                                <a class="nav-link" href="#" onclick="showSection('settingsSection')"> 
+                                    <i class="fas fa-cogs me-2"></i> 
+                                    ڕێکخستن 
+                                </a> 
+                            </li> 
+                        </ul> 
+                    </div> 
+                </div> 
+ 
+                <!-- ناوەڕۆکی سەرەکی --> 
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"> 
+                    <!-- داشبۆرد --> 
+                    <div id="dashboardSection" class="section active"> 
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"> 
+                            <h1 class="h2">داشبۆرد</h1> 
+                        </div> 
+                         
+                        <div class="row"> 
+                            <div class="col-xl-3 col-md-6 mb-4"> 
+                                <div class="card dashboard-card border-left-primary h-100 py-2"> 
+                                    <div class="card-body"> 
+                                        <div class="row no-gutters align-items-center"> 
+                                            <div class="col mr-2"> 
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1"> 
+                                                    کۆی قوتابیان</div> 
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalStudents">0</div> 
+                                            </div> 
+                                            <div class="col-auto"> 
+                                                <i class="fas fa-users fa-2x text-gray-300"></i> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                             
+                            <div class="col-xl-3 col-md-6 mb-4"> 
+                                <div class="card dashboard-card border-left-success h-100 py-2"> 
+                                    <div class="card-body"> 
+                                        <div class="row no-gutters align-items-center"> 
+                                            <div class="col mr-2"> 
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1"> 
+                                                    کۆی غیابەکان</div> 
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalAbsences">0</div> 
+                                            </div> 
+                                            <div class="col-auto"> 
+                                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                             
+                            <div class="col-xl-3 col-md-6 mb-4"> 
+                                <div class="card dashboard-card border-left-info h-100 py-2"> 
+                                    <div class="card-body"> 
+                                        <div class="row no-gutters align-items-center"> 
+                                            <div class="col mr-2"> 
+                                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1"> 
+                                                    قوتابیانی ئەمڕۆ</div> 
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="todayStudents">0</div> 
+                                            </div> 
+                                            <div class="col-auto"> 
+                                                <i class="fas fa-user-check fa-2x text-gray-300"></i> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                             
+                            <div class="col-xl-3 col-md-6 mb-4"> 
+                                <div class="card dashboard-card border-left-warning h-100 py-2"> 
+                                    <div class="card-body"> 
+                                        <div class="row no-gutters align-items-center"> 
+                                            <div class="col mr-2"> 
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"> 
+                                                    نمرەی تێکڕا</div> 
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="averageGrade">0</div> 
+                                            </div> 
+                                            <div class="col-auto"> 
+                                                <i class="fas fa-chart-line fa-2x text-gray-300"></i> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                         
+                        <div class="row"> 
+                            <div class="col-lg-6"> 
+                                <div class="card mb-4"> 
+                                    <div class="card-header"> 
+                                        <i class="fas fa-chart-bar me-1"></i> 
+                                        نمرەکان بەپێی قۆناغ 
+                                    </div> 
+                                    <div class="card-body"> 
+                                        <canvas id="gradesChart" width="100%" height="40"></canvas> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                            <div class="col-lg-6"> 
+                                <div class="card mb-4"> 
+                                    <div class="card-header"> 
+                                        <i class="fas fa-chart-pie me-1"></i> 
+                                        ڕێژەی غیاب 
+                                    </div> 
+                                    <div class="card-body"> 
+                                        <canvas id="attendanceChart" width="100%" height="40"></canvas> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                    </div> 
+                     
+                    <!-- بەشی قوتابیان --> 
+                    <div id="studentsSection" class="section"> 
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"> 
+                            <h1 class="h2">بەشی قوتابیان</h1> 
+                        </div> 
+                         
+                        <div class="card mb-4"> 
+                            <div class="card-header"> 
+                                گەڕان بەدوای قوتابی 
+                            </div> 
+                            <div class="card-body"> 
+                                <div class="row mb-3"> 
+                                    <div class="col-md-6 position-relative"> 
+                                        <label for="studentSearch" class="form-label">ناوی قوتابی</label> 
+                                        <input type="text" class="form-control" id="studentSearch" placeholder="ناوی قوتابی بنووسە..."> 
+                                        <div id="studentSearchResults" class="search-results"></div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                         
+                        <div class="card mb-4"> 
+                            <div class="card-header"> 
+                                زیادکردنی قوتابی 
+                            </div> 
+                            <div class="card-body"> 
+                                <form id="addStudentForm"> 
+                                    <div class="row"> 
+                                        <div class="col-md-6 mb-3"> 
+                                            <label for="studentName" class="form-label">ناوی قوتابی</label> 
+                                            <input type="text" class="form-control" id="studentName" required> 
+                                        </div> 
+                                        <div class="col-md-6 mb-3"> 
+                                            <label for="fatherName" class="form-label">ناوی باوکی</label> 
+                                            <input type="text" class="form-control" id="fatherName" required> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <div class="row"> 
+                                        <div class="col-md-6 mb-3"> 
+                                            <label for="grandfatherName" class="form-label">ناوی باپیری</label> 
+                                            <input type="text" class="form-control" id="grandfatherName" required> 
+                                        </div> 
+                                        <div class="col-md-6 mb-3"> 
+                                            <label for="studentAge" class="form-label">تەمەن</label> 
+                                            <input type="number" class="form-control" id="studentAge" required> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <div class="row"> 
+                                        <div class="col-md-6 mb-3"> 
+                                            <label for="studentPhone" class="form-label">ژمارەی مۆبایلی قوتابی</label> 
+                                            <input type="tel" class="form-control" id="studentPhone"> 
+                                        </div> 
+                                        <div class="col-md-6 mb-3"> 
+                                            <label for="fatherPhone" class="form-label">ژمارەی مۆبایلی باوکی</label> 
+                                            <input type="tel" class="form-control" id="fatherPhone"> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <div class="row"> 
+                                        <div class="col-md-6 mb-3"> 
+                                            <label for="studentGroup" class="form-label">جۆری گروپ</label> 
+                                            <select class="form-select" id="studentGroup" required> 
+                                                <option value="">هەڵبژێرە</option> 
+                                                <option value="A">گروپ A</option> 
+                                                <option value="B">گروپ B</option> 
+                                                <option value="C">گروپ C</option> 
+                                            </select> 
+                                        </div> 
+                                        <div class="col-md-6 mb-3"> 
+                                            <label for="studentLevel" class="form-label">قۆناغ</label> 
+                                            <select class="form-select" id="studentLevel" required> 
+                                                <option value="">هەڵبژێرە</option> 
+                                                <option value="1">قۆناغی 1</option> 
+                                                <option value="2">قۆناغی 2</option> 
+                                                <option value="3">قۆناغی 3</option> 
+                                                <option value="4">قۆناغی 4</option> 
+                                                <option value="5">قۆناغی 5</option> 
+                                            </select> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <div class="mb-3"> 
+                                        <label for="studentPhoto" class="form-label">وێنەی قوتابی</label> 
+                                        <input type="file" class="form-control" id="studentPhoto" accept="image/*"> 
+                                    </div> 
+                                     
+                                    <button type="submit" class="btn btn-primary">زیادکردنی قوتابی</button> 
+                                </form> 
+                            </div> 
+                        </div> 
+                         
+                        <!-- لیستی قوتابیان --> 
+                        <div class="card"> 
+                            <div class="card-header"> 
+                                لیستی هەموو قوتابیان 
+                            </div> 
+                            <div class="card-body"> 
+                                <div class="table-responsive"> 
+                                    <table class="table table-striped"> 
+                                        <thead> 
+                                            <tr> 
+                                                <th>ناو</th> 
+                                                <th>ناوی باوک</th> 
+                                                <th>قۆناغ</th> 
+                                                <th>گروپ</th> 
+                                                <th>کردارەکان</th> 
+                                            </tr> 
+                                        </thead> 
+                                        <tbody id="studentsList"> 
+                                            <!-- لیستی قوتابیان لێرە زیاد دەکرێت --> 
+                                        </tbody> 
+                                    </table> 
+                                </div> 
+                            </div> 
+                        </div> 
+                    </div> 
+                     
+                    <!-- بەشی نمرەکان --> 
+                    <div id="gradesSection" class="section"> 
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"> 
+                            <h1 class="h2">بەشی نمرەکان</h1> 
+                        </div> 
+                         
+                        <div class="card mb-4"> 
+                            <div class="card-header"> 
+                                گەڕان بەدوای قوتابی 
+                            </div> 
+                            <div class="card-body"> 
+                                <div class="row mb-3"> 
+                                    <div class="col-md-6 position-relative"> 
+                                        <label for="gradeStudentSearch" class="form-label">ناوی قوتابی</label> 
+                                        <input type="text" class="form-control" id="gradeStudentSearch" placeholder="ناوی قوتابی بنووسە..."> 
+                                        <div id="gradeStudentSearchResults" class="search-results"></div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                         
+                        <div class="card"> 
+                            <div class="card-header"> 
+                                دانانی نمرە 
+                            </div> 
+                            <div class="card-body"> 
+                                <form id="addGradeForm"> 
+                                    <div class="row mb-3"> 
+                                        <div class="col-md-6"> 
+                                            <label for="gradeStudentName" class="form-label">ناوی قوتابی</label> 
+                                            <input type="text" class="form-control" id="gradeStudentName" readonly> 
+                                        </div> 
+                                        <div class="col-md-6"> 
+                                            <label for="courseName" class="form-label">ناوی دەرس</label> 
+                                            <input type="text" class="form-control" id="courseName" required> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <div class="row mb-3"> 
+                                        <div class="col-md-6"> 
+                                            <label for="first15Grade" class="form-label">نمرەی 15ی یەکەم</label> 
+                                            <input type="number" class="form-control" id="first15Grade" min="0" max="15" step="0.5" required> 
+                                        </div> 
+                                        <div class="col-md-6"> 
+                                            <label for="first5Grade" class="form-label">نمرەی 5ی یەکەم</label> 
+                                            <input type="number" class="form-control" id="first5Grade" min="0" max="5" step="0.5" required> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <div class="row mb-3"> 
+                                        <div class="col-md-6"> 
+                                            <label for="second15Grade" class="form-label">نمرەی 15ی دووەم</label> 
+                                            <input type="number" class="form-control" id="second15Grade" min="0" max="15" step="0.5" required> 
+                                        </div> 
+                                        <div class="col-md-6"> 
+                                            <label for="second5Grade" class="form-label">نمرەی 5ی دووەم</label> 
+                                            <input type="number" class="form-control" id="second5Grade" min="0" max="5" step="0.5" required> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <div class="row mb-3"> 
+                                        <div class="col-md-6"> 
+                                            <label for="final60Grade" class="form-label">نمرەی کۆتایی (سەر 60)</label> 
+                                            <input type="number" class="form-control" id="final60Grade" min="0" max="60" step="0.5" required> 
+                                        </div> 
+                                        <div class="col-md-6"> 
+                                            <label for="totalGrade" class="form-label">کۆی گشتی (سەر 100)</label> 
+                                            <input type="number" class="form-control" id="totalGrade" readonly> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <button type="submit" class="btn btn-primary">خەزنکردنی نمرە</button> 
+                                    <button type="button" class="btn btn-success" id="exportGradesPdf">هەناردەکردنی PDF</button> 
+                                </form> 
+                            </div> 
+                        </div> 
+                    </div> 
+                     
+                    <!-- بەشی غیاب --> 
+                    <div id="attendanceSection" class="section"> 
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"> 
+                            <h1 class="h2">بەشی غیاب</h1> 
+                        </div> 
+                         
+                        <div class="card mb-4"> 
+                            <div class="card-header"> 
+                                گەڕان بەدوای قوتابی 
+                            </div> 
+                            <div class="card-body"> 
+                                <div class="row mb-3"> 
+                                    <div class="col-md-6 position-relative"> 
+                                        <label for="attendanceStudentSearch" class="form-label">ناوی قوتابی</label> 
+                                        <input type="text" class="form-control" id="attendanceStudentSearch" placeholder="ناوی قوتابی بنووسە..."> 
+                                        <div id="attendanceStudentSearchResults" class="search-results"></div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                         
+                        <div class="card"> 
+                            <div class="card-header"> 
+                                تۆمارکردنی غیاب 
+                            </div> 
+                            <div class="card-body"> 
+                                <form id="addAttendanceForm"> 
+                                    <div class="row mb-3"> 
+                                        <div class="col-md-6"> 
+                                            <label for="attendanceStudentName" class="form-label">ناوی قوتابی</label> 
+                                            <input type="text" class="form-control" id="attendanceStudentName" readonly> 
+                                        </div> 
+                                        <div class="col-md-6"> 
+                                            <label for="attendanceCourse" class="form-label">ناوی دەرس</label> 
+                                            <input type="text" class="form-control" id="attendanceCourse" required> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <div class="row mb-3"> 
+                                        <div class="col-md-6"> 
+                                            <label for="attendanceDate" class="form-label">بەرواری غیاب</label> 
+                                            <input type="date" class="form-control" id="attendanceDate" required> 
+                                        </div> 
+                                        <div class="col-md-6"> 
+                                            <label for="attendanceHours" class="form-label">ژمارەی کاتژمێرەکانی غیاب</label> 
+                                            <input type="number" class="form-control" id="attendanceHours" min="1" max="8" required> 
+                                        </div> 
+                                    </div> 
+                                     
+                                    <button type="submit" class="btn btn-primary">تۆمارکردنی غیاب</button> 
+                                </form> 
+                            </div> 
+                        </div> 
+                    </div> 
+                     
+                    <!-- بەشی زانیاری قوتابی --> 
+                    <div id="studentInfoSection" class="section"> 
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"> 
+                            <h1 class="h2">زانیاری قوتابی</h1> 
+                        </div> 
+                         
+                        <div class="card mb-4"> 
+                            <div class="card-header"> 
+                                گەڕان بەدوای قوتابی 
+                            </div> 
+                            <div class="card-body"> 
+                                <div class="row mb-3"> 
+                                    <div class="col-md-6 position-relative"> 
+                                        <label for="infoStudentSearch" class="form-label">ناوی قوتابی</label> 
+                                        <input type="text" class="form-control" id="infoStudentSearch" placeholder="ناوی قوتابی بنووسە..."> 
+                                        <div id="infoStudentSearchResults" class="search-results"></div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                         
+                        <div class="card mb-4" id="studentDetailsCard" style="display: none;"> 
+                            <div class="card-header"> 
+                                زانیاری قوتابی 
+                            </div> 
+                            <div class="card-body"> 
+                                <div class="row"> 
+                                    <div class="col-md-3 text-center"> 
+                                        <img id="studentDetailPhoto" src="" alt="وێنەی قوتابی" class="student-photo mb-3"> 
+                                        <h4 id="studentDetailName"></h4> 
+                                        <p id="studentDetailLevel" class="text-muted"></p> 
+                                    </div> 
+                                    <div class="col-md-9"> 
+                                        <div class="row"> 
+                                            <div class="col-md-6"> 
+                                                <p><strong>ناوی باوکی:</strong> <span id="studentDetailFather"></span></p> 
+                                                <p><strong>ناوی باپیری:</strong> <span id="studentDetailGrandfather"></span></p> 
+                                                <p><strong>تەمەن:</strong> <span id="studentDetailAge"></span></p> 
+                                            </div> 
+                                            <div class="col-md-6"> 
+                                                <p><strong>ژمارەی مۆبایلی قوتابی:</strong> <span id="studentDetailPhone"></span></p> 
+                                                <p><strong>ژمارەی مۆبایلی باوکی:</strong> <span id="studentDetailFatherPhone"></span></p> 
+                                                <p><strong>گروپ:</strong> <span id="studentDetailGroup"></span></p> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                         
+                        <div class="card mb-4" id="studentAttendanceCard" style="display: none;"> 
+                            <div class="card-header d-flex justify-content-between align-items-center"> 
+                                <span>زانیاری غیاب</span> 
+                                <button class="btn btn-sm btn-primary" id="viewAllAttendance">بینینی هەموو غیابەکان</button> 
+                            </div> 
+                            <div class="card-body"> 
+                                <p><strong>کۆی گشتی غیاب:</strong> <span id="totalStudentAbsences">0</span> جار</p> 
+                                <div id="attendanceList"></div> 
+                            </div> 
+                        </div> 
+                         
+                        <div class="card" id="studentGradesCard" style="display: none;"> 
+                            <div class="card-header d-flex justify-content-between align-items-center"> 
+                                <span>زانیاری نمرەکان</span> 
+                                <button class="btn btn-sm btn-success" id="exportStudentGradesPdf">هەناردەکردنی PDF</button> 
+                            </div> 
+                            <div class="card-body"> 
+                                <div id="gradesList"></div> 
+                            </div> 
+                        </div> 
+                    </div> 
+                     
+                    <!-- بەشی ڕێکخستن --> 
+                    <div id="settingsSection" class="section"> 
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"> 
+                            <h1 class="h2">ڕێکخستن</h1> 
+                        </div> 
+                         
+                        <div class="row"> 
+                            <div class="col-lg-6"> 
+                                <div class="card mb-4"> 
+                                    <div class="card-header"> 
+                                        گۆڕینی پاسوۆرد 
+                                    </div> 
+                                    <div class="card-body"> 
+                                        <form id="changePasswordForm"> 
+                                            <div class="mb-3"> 
+                                                <label for="currentPassword" class="form-label">پاسوۆردی ئێستا</label> 
+                                                <input type="password" class="form-control" id="currentPassword" required> 
+                                            </div> 
+                                            <div class="mb-3"> 
+                                                <label for="newPassword" class="form-label">پاسوۆردی نوێ</label> 
+                                                <input type="password" class="form-control" id="newPassword" required> 
+                                            </div> 
+                                            <div class="mb-3"> 
+                                                <label for="confirmPassword" class="form-label">دووبارەکردنەوەی پاسوۆردی نوێ</label> 
+                                                <input type="password" class="form-control" id="confirmPassword" required> 
+                                            </div> 
+                                            <button type="submit" class="btn btn-primary">گۆڕینی پاسوۆرد</button> 
+                                        </form> 
+                                    </div> 
+                                </div> 
+                                 
+                                <div class="card mb-4"> 
+                                    <div class="card-header"> 
+                                        بەکەپ کردن 
+                                    </div> 
+                                    <div class="card-body"> 
+                                        <p>بەکەپ کردن لە هەموو زانیاریەکانی سیستەم</p> 
+                                        <button class="btn btn-primary" id="backupBtn">بەکەپ کردن</button> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                             
+                            <div class="col-lg-6"> 
+                                <div class="card mb-4"> 
+                                    <div class="card-header"> 
+                                        خوێندنەوەی بەکەپ 
+                                    </div> 
+                                    <div class="card-body"> 
+                                        <div class="mb-3"> 
+                                            <label for="backupFile" class="form-label">فایلی بەکەپ</label> 
+                                            <input type="file" class="form-control" id="backupFile" accept=".json"> 
+                                        </div> 
+                                        <button class="btn btn-primary" id="restoreBtn">خوێندنەوەی بەکەپ</button> 
+                                    </div> 
+                                </div> 
+ 
+                                <div class="card mb-4"> 
+                                    <div class="card-header"> 
+                                        خوێندنەوەی زانیاری لە سیستەمی مامۆستا 
+                                    </div> 
+                                    <div class="card-body"> 
+                                        <div class="mb-3"> 
+                                            <label for="teacherBackupFile" class="form-label">فایلی بەکەپی سیستەمی مامۆستا</label> 
+                                            <input type="file" class="form-control" id="teacherBackupFile" accept=".json"> 
+                                        </div> 
+                                        <button class="btn btn-primary" id="importTeacherBtn">خوێندنەوەی زانیاریەکانی غیاب</button> 
+                                        <p class="text-muted mt-2">ئەم ئامرازە تەنها غیابەکان زیاد دەکات بۆ قوتابیەکانی سیستەمی پەیمانگا.</p> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                    </div> 
+                </main> 
+            </div> 
+        </div> 
+    </div> 
+ 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+    <script> 
+        // زانیاریەکانی سیستەم 
+        let students = JSON.parse(localStorage.getItem('students')) || []; 
+        let grades = JSON.parse(localStorage.getItem('grades')) || []; 
+        let attendance = JSON.parse(localStorage.getItem('attendance')) || []; 
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null; 
+        let editingStudentId = null; 
+        let editingGradeId = null; 
+         
+        // پاسوۆردی سەرەکی 
+        const systemPassword = "ashna1212"; 
+        const systemUsername = "ashna"; 
+         
+        // چێککردنی چوونەژوورەوە 
+        document.addEventListener('DOMContentLoaded', function() { 
+            if (currentUser) { 
+                showMainPage(); 
+                displayStudentsList(); 
+            } else { 
+                showLoginPage(); 
+            } 
+             
+            // زیادکردنی Event Listeners 
+            setupEventListeners(); 
+            updateDashboard(); 
+        }); 
+         
+        // نیشاندانی پەڕەی چوونەژوورەوە 
+        function showLoginPage() { 
+            document.getElementById('loginPage').style.display = 'block'; 
+            document.getElementById('mainPage').style.display = 'none'; 
+        } 
+         
+        // نیشاندانی پەڕەی سەرەکی 
+        function showMainPage() { 
+            document.getElementById('loginPage').style.display = 'none'; 
+            document.getElementById('mainPage').style.display = 'block'; 
+            showSection('dashboardSection'); 
+        } 
+         
+        // چوونەژوورەوە 
+        document.getElementById('loginForm').addEventListener('submit', function(e) { 
+            e.preventDefault(); 
+             
+            const username = document.getElementById('username').value; 
+            const password = document.getElementById('password').value; 
+             
+            if (username === systemUsername && password === systemPassword) { 
+                currentUser = { username: username }; 
+                localStorage.setItem('currentUser', JSON.stringify(currentUser)); 
+                document.getElementById('userName').textContent = username; 
+                showMainPage(); 
+                displayStudentsList(); 
+            } else { 
+                alert('ناوی بەکارهێنەر یان پاسوۆرد هەڵەیە!'); 
+            } 
+        }); 
+         
+        // دەرچوون 
+        function logout() { 
+            currentUser = null; 
+            localStorage.removeItem('currentUser'); 
+            showLoginPage(); 
+        } 
+         
+        // نیشاندانی بەشێک 
+        function showSection(sectionId) { 
+            // لێکردنەوەی هەموو بەشەکان 
+            document.querySelectorAll('.section').forEach(section => { 
+                section.classList.remove('active'); 
+            }); 
+             
+            // چالاککردنی بەشی دیاریکراو 
+            document.getElementById(sectionId).classList.add('active'); 
+             
+            // چالاککردنی لیستەی تەنیشت 
+            document.querySelectorAll('.nav-link').forEach(link => { 
+                link.classList.remove('active'); 
+            }); 
+             
+            // دیاریکردنی لیستەی چالاک 
+            let activeLink = null; 
+            switch(sectionId) { 
+                case 'dashboardSection': 
+                    activeLink = document.querySelector('a[href="#"][onclick="showSection(\'dashboardSection\')"]'); 
+                    updateDashboard(); 
+                    break; 
+                case 'studentsSection': 
+                    activeLink = document.querySelector('a[href="#"][onclick="showSection(\'studentsSection\')"]'); 
+                    displayStudentsList(); 
+                    break; 
+                case 'gradesSection': 
+                    activeLink = document.querySelector('a[href="#"][onclick="showSection(\'gradesSection\')"]'); 
+                    break; 
+                case 'attendanceSection': 
+                    activeLink = document.querySelector('a[href="#"][onclick="showSection(\'attendanceSection\')"]'); 
+                    break; 
+                case 'studentInfoSection': 
+                    activeLink = document.querySelector('a[href="#"][onclick="showSection(\'studentInfoSection\')"]'); 
+                    break; 
+                case 'settingsSection': 
+                    activeLink = document.querySelector('a[href="#"][onclick="showSection(\'settingsSection\')"]'); 
+                    break; 
+            } 
+             
+            if (activeLink) { 
+                activeLink.classList.add('active'); 
+            } 
+        } 
+         
+        // زیادکردنی Event Listeners 
+        function setupEventListeners() { 
+            // زیادکردنی قوتابی 
+            document.getElementById('addStudentForm').addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                if (editingStudentId) { 
+                    updateStudent(editingStudentId); 
+                } else { 
+                    addStudent(); 
+                } 
+            }); 
+             
+            // زیادکردنی نمرە 
+            document.getElementById('addGradeForm').addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                if (editingGradeId) { 
+                    updateGrade(editingGradeId); 
+                } else { 
+                    addGrade(); 
+                } 
+            }); 
+             
+            // زیادکردنی غیاب 
+            document.getElementById('addAttendanceForm').addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                addAttendance(); 
+            }); 
+             
+            // گۆڕینی پاسوۆرد 
+            document.getElementById('changePasswordForm').addEventListener('submit', function(e) { 
+                e.preventDefault(); 
+                changePassword(); 
+            }); 
+             
+            // بەکەپ کردن 
+            document.getElementById('backupBtn').addEventListener('click', backupData); 
+             
+            // خوێندنەوەی بەکەپ 
+            document.getElementById('restoreBtn').addEventListener('click', restoreData); 
+             
+            // خوێندنەوەی زانیاری لە سیستەمی مامۆستا 
+            document.getElementById('importTeacherBtn').addEventListener('click', importTeacherSystemBackup); 
+             
+            // هەناردەکردنی PDF بۆ نمرەکان 
+            document.getElementById('exportGradesPdf').addEventListener('click', exportGradesToPdf); 
+             
+            // هەناردەکردنی PDF بۆ نمرەکانی قوتابی 
+            document.getElementById('exportStudentGradesPdf').addEventListener('click', exportStudentGradesToPdf); 
+             
+            // بینینی هەموو غیابەکان 
+            document.getElementById('viewAllAttendance').addEventListener('click', viewAllAttendance); 
+             
+            // گەڕان بەدوای قوتابی 
+            setupStudentSearch(); 
+             
+            // خۆکارکردنی کۆکردنەوەی نمرە 
+            setupGradeCalculation(); 
+             
+            // Event listener بۆ کلیلکاری لە گەڕانی قوتابی 
+            document.addEventListener('click', function(e) { 
+                if (!e.target.matches('#studentSearch, #gradeStudentSearch, #attendanceStudentSearch, #infoStudentSearch')) { 
+                    document.querySelectorAll('.search-results').forEach(results => { 
+                        results.style.display = 'none'; 
+                    }); 
+                } 
+            }); 
+        } 
+         
+        // فەنکشنی نوێ بۆ نیشاندانی لیستی قوتابیان 
+        function displayStudentsList() { 
+            const studentsList = document.getElementById('studentsList'); 
+            studentsList.innerHTML = ''; 
+ 
+            if (students.length === 0) { 
+                studentsList.innerHTML = '<tr><td colspan="5" class="text-center">هیچ قوتابیەک تۆمار نەکراوە</td></tr>'; 
+                return; 
+            } 
+ 
+            students.forEach(student => { 
+                const row = document.createElement('tr'); 
+                row.innerHTML = ` 
+                    <td>${student.name}</td> 
+                    <td>${student.fatherName}</td> 
+                    <td>قۆناغی ${student.level}</td> 
+                    <td>${student.group}</td> 
+                    <td> 
+                        <button class="btn btn-sm btn-warning me-1" onclick="editStudent('${student.id}')"> 
+                            <i class="fas fa-edit"></i> گۆڕانکاری 
+                        </button> 
+                        <button class="btn btn-sm btn-danger" onclick="deleteStudent('${student.id}')"> 
+                            <i class="fas fa-trash"></i> سڕینەوە 
+                        </button> 
+                    </td> 
+                `; 
+                studentsList.appendChild(row); 
+            }); 
+        } 
+ 
+        // فەنکشنی گۆڕانکاری قوتابی 
+        function editStudent(studentId) { 
+            const student = students.find(s => s.id === studentId); 
+            if (!student) return; 
+ 
+            // پڕکردنەوەی فۆرم بە زانیاری قوتابی 
+            document.getElementById('studentName').value = student.name; 
+            document.getElementById('fatherName').value = student.fatherName; 
+            document.getElementById('grandfatherName').value = student.grandfatherName; 
+            document.getElementById('studentAge').value = student.age; 
+            document.getElementById('studentPhone').value = student.phone || ''; 
+            document.getElementById('fatherPhone').value = student.fatherPhone || ''; 
+            document.getElementById('studentGroup').value = student.group; 
+            document.getElementById('studentLevel').value = student.level; 
+ 
+            // گۆڕینی دەقەی دووگمەی زیادکردن 
+            const submitBtn = document.querySelector('#addStudentForm button[type="submit"]'); 
+            submitBtn.textContent = 'نوێکردنەوەی قوتابی'; 
+            editingStudentId = studentId; 
+        } 
+ 
+        // فەنکشنی نوێکردنەوەی قوتابی 
+        function updateStudent(studentId) { 
+            const studentIndex = students.findIndex(s => s.id === studentId); 
+            if (studentIndex === -1) return; 
+ 
+            students[studentIndex] = { 
+                ...students[studentIndex], 
+                name: document.getElementById('studentName').value, 
+                fatherName: document.getElementById('fatherName').value, 
+                grandfatherName: document.getElementById('grandfatherName').value, 
+                age: document.getElementById('studentAge').value, 
+                phone: document.getElementById('studentPhone').value, 
+                fatherPhone: document.getElementById('fatherPhone').value, 
+                group: document.getElementById('studentGroup').value, 
+                level: document.getElementById('studentLevel').value 
+            }; 
+ 
+            // خوێندنەوەی وێنەی نوێ ئەگەر هەیە 
+            const photoInput = document.getElementById('studentPhoto'); 
+            if (photoInput.files.length > 0) { 
+                const reader = new FileReader(); 
+                reader.onload = function(e) { 
+                    students[studentIndex].photo = e.target.result; 
+                    saveStudentsAndRefresh(); 
+                }; 
+                reader.readAsDataURL(photoInput.files[0]); 
+            } else { 
+                saveStudentsAndRefresh(); 
+            } 
+        } 
+ 
+        // فەنکشنی سڕینەوەی قوتابی 
+        function deleteStudent(studentId) { 
+            if (!confirm('دڵنیایت دەتەوێت ئەم قوتابیە بسڕیتەوە؟')) { 
+                return; 
+            } 
+ 
+            // سڕینەوەی قوتابی 
+            students = students.filter(s => s.id !== studentId); 
+             
+            // سڕینەوەی هەموو نمرەکانی قوتابی 
+            grades = grades.filter(g => g.studentId !== studentId); 
+             
+            // سڕینەوەی هەموو غیابەکانی قوتابی 
+            attendance = attendance.filter(a => a.studentId !== studentId); 
+ 
+            saveStudentsAndRefresh(); 
+            alert('قوتابی بە سەرکەوتوویی سڕدرایەوە!'); 
+        } 
+ 
+        // فەنکشنی پاشەکەوتکردن و نوێکردنەوە 
+        function saveStudentsAndRefresh() { 
+            localStorage.setItem('students', JSON.stringify(students)); 
+            localStorage.setItem('grades', JSON.stringify(grades)); 
+            localStorage.setItem('attendance', JSON.stringify(attendance)); 
+             
+            displayStudentsList(); 
+            updateDashboard(); 
+             
+            // ڕیسێتکردنی فۆرم 
+            document.getElementById('addStudentForm').reset(); 
+            const submitBtn = document.querySelector('#addStudentForm button[type="submit"]'); 
+            submitBtn.textContent = 'زیادکردنی قوتابی'; 
+            editingStudentId = null; 
+        } 
+         
+        // زیادکردنی قوتابی 
+        function addStudent() { 
+            const student = { 
+                id: Date.now().toString(), 
+                name: document.getElementById('studentName').value, 
+                fatherName: document.getElementById('fatherName').value, 
+                grandfatherName: document.getElementById('grandfatherName').value, 
+                age: document.getElementById('studentAge').value, 
+                phone: document.getElementById('studentPhone').value, 
+                fatherPhone: document.getElementById('fatherPhone').value, 
+                group: document.getElementById('studentGroup').value, 
+                level: document.getElementById('studentLevel').value, 
+                photo: null 
+            }; 
+             
+            // خوێندنەوەی وێنە 
+            const photoInput = document.getElementById('studentPhoto'); 
+            if (photoInput.files.length > 0) { 
+                const reader = new FileReader(); 
+                reader.onload = function(e) { 
+                    student.photo = e.target.result; 
+                    saveStudent(student); 
+                }; 
+                reader.readAsDataURL(photoInput.files[0]); 
+            } else { 
+                saveStudent(student); 
+            } 
+        } 
+         
+        // پاشەکەوتکردنی قوتابی 
+        function saveStudent(student) { 
+            students.push(student); 
+            localStorage.setItem('students', JSON.stringify(students)); 
+            alert('قوتابی بە سەرکەوتوویی زیاد کرا!'); 
+            document.getElementById('addStudentForm').reset(); 
+            displayStudentsList(); 
+            updateDashboard(); 
+        } 
+         
+        // زیادکردنی نمرە 
+        function addGrade() { 
+            const studentName = document.getElementById('gradeStudentName').value; 
+            const student = students.find(s => s.name === studentName); 
+             
+            if (!student) { 
+                alert('تکایە یەکەم قوتابیەک هەڵبژێرە!'); 
+                return; 
+            } 
+             
+            const grade = { 
+                id: Date.now().toString(), 
+                studentId: student.id, 
+                studentName: student.name, 
+                courseName: document.getElementById('courseName').value, 
+                first15Grade: parseFloat(document.getElementById('first15Grade').value) || 0, 
+                first5Grade: parseFloat(document.getElementById('first5Grade').value) || 0, 
+                second15Grade: parseFloat(document.getElementById('second15Grade').value) || 0, 
+                second5Grade: parseFloat(document.getElementById('second5Grade').value) || 0, 
+                final60Grade: parseFloat(document.getElementById('final60Grade').value) || 0, 
+                totalGrade: parseFloat(document.getElementById('totalGrade').value) || 0 
+            }; 
+             
+            grades.push(grade); 
+            localStorage.setItem('grades', JSON.stringify(grades)); 
+            alert('نمرە بە سەرکەوتوویی تۆمار کرا!'); 
+            document.getElementById('addGradeForm').reset(); 
+            updateDashboard(); 
+        } 
+         
+        // فەنکشنی گۆڕانکاری نمرە 
+        function editGrade(gradeId) { 
+            const grade = grades.find(g => g.id === gradeId); 
+            if (!grade) return; 
+ 
+            // گۆڕینی بەشەکە بۆ نمرەکان 
+            showSection('gradesSection'); 
+             
+            // ڕیسێتکردنی گەڕان 
+            document.getElementById('gradeStudentSearch').value = grade.studentName; 
+            document.getElementById('gradeStudentName').value = grade.studentName; 
+ 
+            // پڕکردنەوەی فۆرم بە زانیاری نمرە 
+            document.getElementById('courseName').value = grade.courseName; 
+            document.getElementById('first15Grade').value = grade.first15Grade; 
+            document.getElementById('first5Grade').value = grade.first5Grade; 
+            document.getElementById('second15Grade').value = grade.second15Grade; 
+            document.getElementById('second5Grade').value = grade.second5Grade; 
+            document.getElementById('final60Grade').value = grade.final60Grade; 
+            document.getElementById('totalGrade').value = grade.totalGrade; 
+ 
+            // گۆڕینی دەقەی دووگمەی پاشەکەوتکردن 
+            const submitBtn = document.querySelector('#addGradeForm button[type="submit"]'); 
+            submitBtn.textContent = 'نوێکردنەوەی نمرە'; 
+            editingGradeId = gradeId; 
+        } 
+ 
+        // فەنکشنی نوێکردنەوەی نمرە 
+        function updateGrade(gradeId) { 
+            const gradeIndex = grades.findIndex(g => g.id === gradeId); 
+            if (gradeIndex === -1) return; 
+ 
+            grades[gradeIndex] = { 
+                ...grades[gradeIndex], 
+                courseName: document.getElementById('courseName').value, 
+                first15Grade: parseFloat(document.getElementById('first15Grade').value) || 0, 
+                first5Grade: parseFloat(document.getElementById('first5Grade').value) || 0, 
+                second15Grade: parseFloat(document.getElementById('second15Grade').value) || 0, 
+                second5Grade: parseFloat(document.getElementById('second5Grade').value) || 0, 
+                final60Grade: parseFloat(document.getElementById('final60Grade').value) || 0, 
+                totalGrade: parseFloat(document.getElementById('totalGrade').value) || 0 
+            }; 
+ 
+            localStorage.setItem('grades', JSON.stringify(grades)); 
+            alert('نمرە بە سەرکەوتوویی نوێکرایەوە!'); 
+             
+            // ڕیسێتکردنی فۆرم 
+            document.getElementById('addGradeForm').reset(); 
+            const submitBtn = document.querySelector('#addGradeForm button[type="submit"]'); 
+            submitBtn.textContent = 'خەزنکردنی نمرە'; 
+            editingGradeId = null; 
+             
+            // نوێکردنەوەی زانیاری قوتابی ئەگەر لە بەشی زانیاری قوتابیدایە 
+            const studentName = document.getElementById('studentDetailName').textContent; 
+            if (studentName && studentName !== '') { 
+                const student = students.find(s => s.name === studentName); 
+                if (student) { 
+                    showStudentGrades(student); 
+                } 
+            } 
+             
+            updateDashboard(); 
+        } 
+ 
+        // فەنکشنی سڕینەوەی نمرە 
+        function deleteGrade(gradeId) { 
+            if (!confirm('دڵنیایت دەتەوێت ئەم نمرە بسڕیتەوە؟')) { 
+                return; 
+            } 
+ 
+            grades = grades.filter(g => g.id !== gradeId); 
+            localStorage.setItem('grades', JSON.stringify(grades)); 
+             
+            // نوێکردنەوەی زانیاری قوتابی 
+            const studentName = document.getElementById('studentDetailName').textContent; 
+            const student = students.find(s => s.name === studentName); 
+            if (student) { 
+                showStudentGrades(student); 
+            } 
+             
+            updateDashboard(); 
+            alert('نمرە بە سەرکەوتوویی سڕدرایەوە!'); 
+        } 
+         
+        // زیادکردنی غیاب 
+        function addAttendance() { 
+            const studentName = document.getElementById('attendanceStudentName').value; 
+            const student = students.find(s => s.name === studentName); 
+             
+            if (!student) { 
+                alert('تکایە یەکەم قوتابیەک هەڵبژێرە!'); 
+                return; 
+            } 
+             
+            const attendanceRecord = { 
+                id: Date.now().toString(), 
+                studentId: student.id, 
+                studentName: student.name, 
+                courseName: document.getElementById('attendanceCourse').value, 
+                date: document.getElementById('attendanceDate').value, 
+                hours: parseInt(document.getElementById('attendanceHours').value) 
+            }; 
+             
+            attendance.push(attendanceRecord); 
+            localStorage.setItem('attendance', JSON.stringify(attendance)); 
+            alert('غیاب بە سەرکەوتوویی تۆمار کرا!'); 
+            document.getElementById('addAttendanceForm').reset(); 
+            updateDashboard(); 
+        } 
+         
+        // فەنکشنی سڕینەوەی غیاب 
+        function deleteAttendance(attendanceId) { 
+            if (!confirm('دڵنیایت دەتەوێت ئەم غیابە بسڕیتەوە؟')) { 
+                return; 
+            } 
+ 
+            attendance = attendance.filter(a => a.id !== attendanceId); 
+            localStorage.setItem('attendance', JSON.stringify(attendance)); 
+             
+            // نوێکردنەوەی زانیاری قوتابی 
+            const studentName = document.getElementById('studentDetailName').textContent; 
+            const student = students.find(s => s.name === studentName); 
+            if (student) { 
+                showStudentAttendance(student); 
+            } 
+             
+            updateDashboard(); 
+            alert('غیاب بە سەرکەوتوویی سڕدرایەوە!'); 
+        } 
+         
+        // گۆڕینی پاسوۆرد 
+        function changePassword() { 
+            const currentPassword = document.getElementById('currentPassword').value; 
+            const newPassword = document.getElementById('newPassword').value; 
+            const confirmPassword = document.getElementById('confirmPassword').value; 
+             
+            if (currentPassword !== systemPassword) { 
+                alert('پاسوۆردی ئێستا هەڵەیە!'); 
+                return; 
+            } 
+             
+            if (newPassword !== confirmPassword) { 
+                alert('پاسوۆردی نوێ و دووبارەکردنەوەی جیاوازن!'); 
+                return; 
+            } 
+             
+            alert('پاسوۆرد بە سەرکەوتوویی گۆڕدرا!'); 
+            document.getElementById('changePasswordForm').reset(); 
+        } 
+         
+        // بەکەپ کردن 
+        function backupData() { 
+            const data = { 
+                students: students, 
+                grades: grades, 
+                attendance: attendance, 
+                backupDate: new Date().toISOString() 
+            }; 
+             
+            const dataStr = JSON.stringify(data); 
+            const dataBlob = new Blob([dataStr], {type: 'application/json'}); 
+             
+            const link = document.createElement('a'); 
+            link.href = URL.createObjectURL(dataBlob); 
+            link.download = `soran_institute_backup_${new Date().toISOString().split('T')[0]}.json`; 
+            link.click(); 
+             
+            alert('بەکەپ بە سەرکەوتوویی دروست کرا!'); 
+        } 
+         
+        // خوێندنەوەی بەکەپ 
+        function restoreData() { 
+            const fileInput = document.getElementById('backupFile'); 
+            if (fileInput.files.length === 0) { 
+                alert('تکایە فایلی بەکەپ هەڵبژێرە!'); 
+                return; 
+            } 
+             
+            const file = fileInput.files[0]; 
+            const reader = new FileReader(); 
+             
+            reader.onload = function(e) { 
+                try { 
+                    const data = JSON.parse(e.target.result); 
+                    let importedStudents = 0; 
+                    let importedAttendance = 0; 
+                    let updatedAttendance = 0; 
+                     
+                    // زیادکردنی قوتابیە نوێیەکان 
+                    if (data.students) { 
+                        data.students.forEach(newStudent => { 
+                            if (!students.find(s => s.id === newStudent.id)) { 
+                                students.push(newStudent); 
+                                importedStudents++; 
+                            } 
+                        }); 
+                    } 
+                     
+                    // زیادکردنی غیابەکان بە شێوازێکی زیرەک 
+                    if (data.attendance) { 
+                        data.attendance.forEach(newAttendance => { 
+                            // پشکنین بۆ دۆزینەوەی قوتابی لە سیستەمی پەیمانگا 
+                            const existingStudent = students.find(s => s.id === newAttendance.studentId); 
+                             
+                            if (existingStudent) { 
+                                // پشکنین بۆ دۆزینەوەی غیابی هاوشێوە 
+                                const existingAttendanceIndex = attendance.findIndex(a =>  
+                                    a.id === newAttendance.id ||  
+                                    (a.studentId === newAttendance.studentId &&  
+                                     a.date === newAttendance.date &&  
+                                     a.courseName === newAttendance.course) 
+                                ); 
+                                 
+                                if (existingAttendanceIndex === -1) { 
+                                    // زیادکردنی غیابی نوێ 
+                                    attendance.push({ 
+                                        id: newAttendance.id, 
+                                        studentId: newAttendance.studentId, 
+                                        studentName: existingStudent.name, 
+                                        courseName: newAttendance.course || newAttendance.courseName, 
+                                        date: newAttendance.date, 
+                                        hours: newAttendance.present === false ? (newAttendance.hours || 1) : 0 
+                                    }); 
+                                    importedAttendance++; 
+                                } else { 
+                                    // نوێکردنەوەی غیابی هەبوو 
+                                    attendance[existingAttendanceIndex] = { 
+                                        ...attendance[existingAttendanceIndex], 
+                                        courseName: newAttendance.course || newAttendance.courseName, 
+                                        date: newAttendance.date, 
+                                        hours: newAttendance.present === false ? (newAttendance.hours || 1) : 0 
+                                    }; 
+                                    updatedAttendance++; 
+                                } 
+                            } 
+                        }); 
+                    } 
+                     
+                    // پاشەکەوتکردنی زانیاریە نوێیەکان 
+                    localStorage.setItem('students', JSON.stringify(students)); 
+                    localStorage.setItem('attendance', JSON.stringify(attendance)); 
+                     
+                    // نیشاندانی ڕاپۆرت 
+                    let report = `زانیاریەکان بە سەرکەوتوویی خوێندرایەوە!\n\n`; 
+                    if (importedStudents > 0) report += `✅ ${importedStudents} قوتابی نوێ زیاد کرا\n`; 
+                    if (importedAttendance > 0) report += `✅ ${importedAttendance} غیابی نوێ زیاد کرا\n`; 
+                    if (updatedAttendance > 0) report += `✅ ${updatedAttendance} غیاب نوێکرایەوە\n`; 
+                     
+                    if (importedStudents === 0 && importedAttendance === 0 && updatedAttendance === 0) { 
+                        report += `ℹ️ ھیچ زانیاریەکی نوێ نەدۆزرایەوە`; 
+                    } 
+                     
+                    alert(report); 
+                    displayStudentsList(); 
+                    updateDashboard(); 
+                } catch (error) { 
+                    alert('هەڵە لە خوێندنەوەی فایلی بەکەپ: ' + error.message); 
+                } 
+            }; 
+             
+            reader.readAsText(file); 
+        } 
+ 
+        // خوێندنەوەی زانیاری لە سیستەمی مامۆستا 
+        function importTeacherSystemBackup() { 
+            const fileInput = document.getElementById('teacherBackupFile'); 
+            if (fileInput.files.length === 0) { 
+                alert('تکایە فایلی بەکەپی سیستەمی مامۆستا هەڵبژێرە!'); 
+                return; 
+            } 
+             
+            const file = fileInput.files[0]; 
+            const reader = new FileReader(); 
+             
+            reader.onload = function(e) { 
+                try { 
+                    const data = JSON.parse(e.target.result); 
+                    let importedAttendance = 0; 
+                    let skippedStudents = 0; 
+                     
+                    // پشکنین بۆ زانیاریەکانی سیستەمی مامۆستا 
+                    if (data.attendance) { 
+                        data.attendance.forEach(teacherAttendance => { 
+                            // گەڕان بەدوای قوتابی لە سیستەمی پەیمانگا بە ناو 
+                            const existingStudent = students.find(s =>  
+                                s.name === teacherAttendance.studentName 
+                            ); 
+                             
+                            if (existingStudent) { 
+                                // پشکنین بۆ دۆزینەوەی غیابی هاوشێوە 
+                                const existingAttendanceIndex = attendance.findIndex(a =>  
+                                    a.studentId === existingStudent.id &&  
+                                    a.date === teacherAttendance.date &&  
+                                    a.courseName === teacherAttendance.course 
+                                ); 
+                                 
+                                if (existingAttendanceIndex === -1 && teacherAttendance.present === false) { 
+                                    // زیادکردنی غیابی نوێ تەنها ئەگەر قوتابی غیابی بووبێت 
+                                    attendance.push({ 
+                                        id: `teacher-${teacherAttendance.id}`, 
+                                        studentId: existingStudent.id, 
+                                        studentName: existingStudent.name, 
+                                        courseName: teacherAttendance.course, 
+                                        date: teacherAttendance.date, 
+                                        hours: 1, // سیستەمی مامۆستا کاتژمێر دیاری ناکات 
+                                        source: 'سیستەمی مامۆستا' 
+                                    }); 
+                                    importedAttendance++; 
+                                } 
+                            } else { 
+                                skippedStudents++; 
+                            } 
+                        }); 
+                    } 
+                     
+                    // پاشەکەوتکردنی زانیاریە نوێیەکان 
+                    localStorage.setItem('attendance', JSON.stringify(attendance)); 
+                     
+                    // نیشاندانی ڕاپۆرت 
+                    let report = `زانیاریەکانی سیستەمی مامۆستا بە سەرکەوتوویی خوێندرایەوە!\n\n`; 
+                    if (importedAttendance > 0) report += `✅ ${importedAttendance} غیابی نوێ زیاد کرا\n`; 
+                    if (skippedStudents > 0) report += `❌ ${skippedStudents} غیاب پشتگوێ خران (قوتابی نەدۆزرایەوە)\n`; 
+                     
+                    alert(report); 
+                    updateDashboard(); 
+                     
+                    // نوێکردنەوەی زانیاری قوتابی ئەگەر لە بەشی زانیاری قوتابیدایە 
+                    const currentStudentName = document.getElementById('studentDetailName').textContent; 
+                    if (currentStudentName && currentStudentName !== '') { 
+                        const student = students.find(s => s.name === currentStudentName); 
+                        if (student) { 
+                            showStudentAttendance(student); 
+                        } 
+                    } 
+                } catch (error) { 
+                    alert('هەڵە لە خوێندنەوەی فایلی سیستەمی مامۆستا: ' + error.message); 
+                } 
+            }; 
+             
+            reader.readAsText(file); 
+        } 
+         
+        // ڕێکخستنی گەڕان بەدوای قوتابی 
+        function setupStudentSearch() { 
+            // گەڕان لە بەشی قوتابیان 
+            document.getElementById('studentSearch').addEventListener('input', function() { 
+                searchStudents(this.value, 'studentSearchResults', function(student) { 
+                    // هیچ کردارێک لێنینەدەکرێت، تەنها پێشنیار 
+                }); 
+            }); 
+             
+            // گەڕان لە بەشی نمرەکان 
+            document.getElementById('gradeStudentSearch').addEventListener('input', function() { 
+                searchStudents(this.value, 'gradeStudentSearchResults', function(student) { 
+                    document.getElementById('gradeStudentName').value = student.name; 
+                    document.getElementById('gradeStudentSearch').value = ''; 
+                    document.getElementById('gradeStudentSearchResults').style.display = 'none'; 
+                }); 
+            }); 
+             
+            // گەڕان لە بەشی غیاب 
+            document.getElementById('attendanceStudentSearch').addEventListener('input', function() { 
+                searchStudents(this.value, 'attendanceStudentSearchResults', function(student) { 
+                    document.getElementById('attendanceStudentName').value = student.name; 
+                    document.getElementById('attendanceStudentSearch').value = ''; 
+                    document.getElementById('attendanceStudentSearchResults').style.display = 'none'; 
+                }); 
+            }); 
+             
+            // گەڕان لە بەشی زانیاری قوتابی 
+            document.getElementById('infoStudentSearch').addEventListener('input', function() { 
+                searchStudents(this.value, 'infoStudentSearchResults', function(student) { 
+                    showStudentInfo(student); 
+                    document.getElementById('infoStudentSearch').value = ''; 
+                    document.getElementById('infoStudentSearchResults').style.display = 'none'; 
+                }); 
+            }); 
+        } 
+         
+        // گەڕان بەدوای قوتابی 
+        function searchStudents(query, resultsContainerId, onSelect) { 
+            const resultsContainer = document.getElementById(resultsContainerId); 
+             
+            if (query.length < 2) { 
+                resultsContainer.style.display = 'none'; 
+                return; 
+            } 
+             
+            const filteredStudents = students.filter(student =>  
+                student.name.toLowerCase().includes(query.toLowerCase()) 
+            ); 
+             
+            if (filteredStudents.length === 0) { 
+                resultsContainer.innerHTML = '<div class="search-item">هیچ قوتابیەک نەدۆزرایەوە</div>'; 
+                resultsContainer.style.display = 'block'; 
+                return; 
+            } 
+             
+            resultsContainer.innerHTML = ''; 
+            filteredStudents.forEach(student => { 
+                const item = document.createElement('div'); 
+                item.className = 'search-item'; 
+                item.textContent = student.name; 
+                item.addEventListener('click', function() { 
+                    onSelect(student); 
+                }); 
+                resultsContainer.appendChild(item); 
+            }); 
+             
+            resultsContainer.style.display = 'block'; 
+        } 
+         
+        // نیشاندانی زانیاری قوتابی 
+        function showStudentInfo(student) { 
+            // نیشاندانی زانیاری سەرەکی 
+            document.getElementById('studentDetailName').textContent = student.name; 
+            document.getElementById('studentDetailFather').textContent = student.fatherName; 
+            document.getElementById('studentDetailGrandfather').textContent = student.grandfatherName; 
+            document.getElementById('studentDetailAge').textContent = student.age; 
+            document.getElementById('studentDetailPhone').textContent = student.phone || '-'; 
+            document.getElementById('studentDetailFatherPhone').textContent = student.fatherPhone || '-'; 
+            document.getElementById('studentDetailGroup').textContent = student.group; 
+            document.getElementById('studentDetailLevel').textContent = `قۆناغی ${student.level}`; 
+             
+            if (student.photo) { 
+                document.getElementById('studentDetailPhoto').src = student.photo; 
+            } else { 
+                document.getElementById('studentDetailPhoto').src = 'https://via.placeholder.com/120?text=وێنە'; 
+            } 
+             
+            document.getElementById('studentDetailsCard').style.display = 'block'; 
+             
+            // نیشاندانی زانیاری غیاب 
+            showStudentAttendance(student); 
+             
+            // نیشاندانی زانیاری نمرە 
+            showStudentGrades(student); 
+        } 
+         
+        // نیشاندانی زانیاری غیابی قوتابی 
+        function showStudentAttendance(student) { 
+            const studentAttendance = attendance.filter(a => a.studentId === student.id); 
+            
+            // لێرە گۆڕانکاریەکە: کۆی ژمارەی غیابەکان نەک کاتژمێر
+            const totalAbsences = studentAttendance.length;
+            
+            document.getElementById('totalStudentAbsences').textContent = totalAbsences;
+            
+            // نیشاندانی 5 غیابی کۆتایی
+            const recentAttendance = studentAttendance.slice(-5);
+            let attendanceHTML = `
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>بەروار</th>
+                            <th>دەرس</th>
+                            <th>سەرچاوە</th>
+                            <th>کردارەکان</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            recentAttendance.forEach(a => {
+                attendanceHTML += `
+                    <tr>
+                        <td>${a.date}</td>
+                        <td>${a.courseName}</td>
+                        <td>${a.source || 'سیستەمی پەیمانگا'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="deleteAttendance('${a.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            attendanceHTML += '</tbody></table>';
+            
+            document.getElementById('attendanceList').innerHTML = attendanceHTML;
+            document.getElementById('studentAttendanceCard').style.display = 'block';
+        }
+         
+        // نیشاندانی هەموو غیابەکان 
+        function viewAllAttendance() { 
+            const studentName = document.getElementById('studentDetailName').textContent; 
+            const student = students.find(s => s.name === studentName); 
+             
+            if (!student) return; 
+             
+            const studentAttendance = attendance.filter(a => a.studentId === student.id); 
+             
+            let attendanceHTML = ` 
+                <table class="table table-striped"> 
+                    <thead> 
+                        <tr> 
+                            <th>بەروار</th> 
+                            <th>دەرس</th> 
+                            <th>سەرچاوە</th> 
+                            <th>کردارەکان</th> 
+                        </tr> 
+                    </thead> 
+                    <tbody> 
+            `; 
+             
+            studentAttendance.forEach(a => { 
+                attendanceHTML += ` 
+                    <tr> 
+                        <td>${a.date}</td> 
+                        <td>${a.courseName}</td> 
+                        <td>${a.source || 'سیستەمی پەیمانگا'}</td> 
+                        <td> 
+                            <button class="btn btn-sm btn-danger" onclick="deleteAttendance('${a.id}')"> 
+                                <i class="fas fa-trash"></i> 
+                            </button> 
+                        </td> 
+                    </tr> 
+                `; 
+            }); 
+             
+            attendanceHTML += '</tbody></table>'; 
+             
+            document.getElementById('attendanceList').innerHTML = attendanceHTML; 
+        } 
+         
+        // نیشاندانی نمرەکانی قوتابی 
+        function showStudentGrades(student) { 
+            const studentGrades = grades.filter(g => g.studentId === student.id); 
+             
+            if (studentGrades.length === 0) { 
+                document.getElementById('gradesList').innerHTML = '<p>هیچ نمرەیەک بۆ ئەم قوتابیە تۆمار نەکراوە.</p>'; 
+                document.getElementById('studentGradesCard').style.display = 'block'; 
+                return; 
+            } 
+             
+            // نیشاندانی 5 نمرەی کۆتایی 
+            const recentGrades = studentGrades.slice(-5); 
+            let gradesHTML = ` 
+                <table class="table table-striped"> 
+                    <thead> 
+                        <tr> 
+                            <th>دەرس</th> 
+                            <th>15ی یەکەم</th> 
+                            <th>5ی یەکەم</th> 
+                            <th>15ی دووەم</th> 
+                            <th>5ی دووەم</th> 
+                            <th>کۆتایی (60)</th> 
+                            <th>کۆی گشتی (100)</th> 
+                            <th>کردارەکان</th> 
+                        </tr> 
+                    </thead> 
+                    <tbody> 
+            `; 
+             
+            recentGrades.forEach(g => { 
+                gradesHTML += ` 
+                    <tr> 
+                        <td>${g.courseName}</td> 
+                        <td>${g.first15Grade}</td> 
+                        <td>${g.first5Grade}</td> 
+                        <td>${g.second15Grade}</td> 
+                        <td>${g.second5Grade}</td> 
+                        <td>${g.final60Grade}</td> 
+                        <td>${g.totalGrade}</td> 
+                        <td> 
+                            <button class="btn btn-sm btn-warning me-1" onclick="editGrade('${g.id}')"> 
+                                <i class="fas fa-edit"></i> 
+                            </button> 
+                            <button class="btn btn-sm btn-danger" onclick="deleteGrade('${g.id}')"> 
+                                <i class="fas fa-trash"></i> 
+                            </button> 
+                        </td> 
+                    </tr> 
+                `; 
+            }); 
+             
+            gradesHTML += '</tbody></table>'; 
+             
+            // زیادکردنی دووگمەی بینینی هەموو نمرەکان 
+            if (studentGrades.length > 5) { 
+                gradesHTML += ` 
+                    <div class="text-center mt-3"> 
+                        <button class="btn btn-primary" onclick="viewAllGrades()"> 
+                            بینینی هەموو نمرەکان (${studentGrades.length}) 
+                        </button> 
+                    </div> 
+                `; 
+            } 
+             
+            document.getElementById('gradesList').innerHTML = gradesHTML; 
+            document.getElementById('studentGradesCard').style.display = 'block'; 
+        } 
+ 
+        // فەنکشنی بینینی هەموو نمرەکان بۆ قوتابی 
+        function viewAllGrades() { 
+            const studentName = document.getElementById('studentDetailName').textContent; 
+            const student = students.find(s => s.name === studentName); 
+             
+            if (!student) return; 
+ 
+            const studentGrades = grades.filter(g => g.studentId === student.id); 
+             
+            if (studentGrades.length === 0) { 
+                document.getElementById('gradesList').innerHTML = '<p>هیچ نمرەیەک بۆ ئەم قوتابیە تۆمار نەکراوە.</p>'; 
+                return; 
+            } 
+             
+            let gradesHTML = ` 
+                <table class="table table-striped"> 
+                    <thead> 
+                        <tr> 
+                            <th>دەرس</th> 
+                            <th>15ی یەکەم</th> 
+                            <th>5ی یەکەم</th> 
+                            <th>15ی دووەم</th> 
+                            <th>5ی دووەم</th> 
+                            <th>کۆتایی (60)</th> 
+                            <th>کۆی گشتی (100)</th> 
+                            <th>کردارەکان</th> 
+                        </tr> 
+                    </thead> 
+                    <tbody> 
+            `; 
+             
+            studentGrades.forEach(g => { 
+                gradesHTML += ` 
+                    <tr> 
+                        <td>${g.courseName}</td> 
+                        <td>${g.first15Grade}</td> 
+                        <td>${g.first5Grade}</td> 
+                        <td>${g.second15Grade}</td> 
+                        <td>${g.second5Grade}</td> 
+                        <td>${g.final60Grade}</td> 
+                        <td>${g.totalGrade}</td> 
+                        <td> 
+                            <button class="btn btn-sm btn-warning me-1" onclick="editGrade('${g.id}')"> 
+                                <i class="fas fa-edit"></i> 
+                            </button> 
+                            <button class="btn btn-sm btn-danger" onclick="deleteGrade('${g.id}')"> 
+                                <i class="fas fa-trash"></i> 
+                            </button> 
+                        </td> 
+                    </tr> 
+                `; 
+            }); 
+             
+            gradesHTML += '</tbody></table>'; 
+             
+            document.getElementById('gradesList').innerHTML = gradesHTML; 
+        } 
+         
+        // ڕێکخستنی خۆکارکردنی کۆکردنەوەی نمرە 
+        function setupGradeCalculation() { 
+            const gradeInputs = [ 
+                'first15Grade', 'first5Grade', 'second15Grade', 'second5Grade', 'final60Grade' 
+            ]; 
+             
+            gradeInputs.forEach(inputId => { 
+                document.getElementById(inputId).addEventListener('input', calculateTotalGrade); 
+            }); 
+        } 
+         
+        // کۆکردنەوەی نمرە 
+        function calculateTotalGrade() { 
+            const first15 = parseFloat(document.getElementById('first15Grade').value) || 0; 
+            const first5 = parseFloat(document.getElementById('first5Grade').value) || 0; 
+            const second15 = parseFloat(document.getElementById('second15Grade').value) || 0; 
+            const second5 = parseFloat(document.getElementById('second5Grade').value) || 0; 
+            const final60 = parseFloat(document.getElementById('final60Grade').value) || 0; 
+             
+            const total = first15 + first5 + second15 + second5 + final60; 
+            document.getElementById('totalGrade').value = total.toFixed(2); 
+        } 
+         
+        // نوێکردنەوەی داشبۆرد 
+        function updateDashboard() { 
+            // کۆی قوتابیان 
+            document.getElementById('totalStudents').textContent = students.length; 
+             
+            // کۆی غیابەکان 
+            const totalAbsences = attendance.reduce((sum, a) => sum + a.hours, 0); 
+            document.getElementById('totalAbsences').textContent = totalAbsences; 
+             
+            // قوتابیانی ئەمڕۆ (نموونەیی) 
+            document.getElementById('todayStudents').textContent = Math.floor(students.length * 0.85); 
+             
+            // نمرەی تێکڕا 
+            const totalGrades = grades.reduce((sum, g) => sum + g.totalGrade, 0); 
+            const averageGrade = grades.length > 0 ? (totalGrades / grades.length).toFixed(2) : 0; 
+            document.getElementById('averageGrade').textContent = averageGrade; 
+             
+            // دروستکردنی گرافەکان 
+            createCharts(); 
+        } 
+         
+        // دروستکردنی گرافەکان 
+        function createCharts() { 
+            // گرافی نمرەکان بەپێی قۆناغ 
+            const gradesByLevel = {}; 
+            students.forEach(student => { 
+                if (!gradesByLevel[student.level]) { 
+                    gradesByLevel[student.level] = []; 
+                } 
+                 
+                const studentGrades = grades.filter(g => g.studentId === student.id); 
+                if (studentGrades.length > 0) { 
+                    const avgGrade = studentGrades.reduce((sum, g) => sum + g.totalGrade, 0) / studentGrades.length; 
+                    gradesByLevel[student.level].push(avgGrade); 
+                } 
+            }); 
+             
+            const levelLabels = []; 
+            const levelAverages = []; 
+             
+            Object.keys(gradesByLevel).sort().forEach(level => { 
+                if (gradesByLevel[level].length > 0) { 
+                    levelLabels.push(`قۆناغی ${level}`); 
+                    const avg = gradesByLevel[level].reduce((sum, g) => sum + g, 0) / gradesByLevel[level].length; 
+                    levelAverages.push(avg.toFixed(2)); 
+                } 
+            }); 
+             
+            const gradesCtx = document.getElementById('gradesChart').getContext('2d'); 
+            if (gradesCtx) { 
+                new Chart(gradesCtx, { 
+                    type: 'bar', 
+                    data: { 
+                        labels: levelLabels, 
+                        datasets: [{ 
+                            label: 'نمرەی تێکڕا', 
+                            data: levelAverages, 
+                            backgroundColor: 'rgba(78, 115, 223, 0.5)', 
+                            borderColor: 'rgba(78, 115, 223, 1)', 
+                            borderWidth: 1 
+                        }] 
+                    }, 
+                    options: { 
+                        scales: { 
+                            y: { 
+                                beginAtZero: true, 
+                                max: 100 
+                            } 
+                        } 
+                    } 
+                }); 
+            } 
+             
+            // گرافی ڕێژەی غیاب 
+            const attendanceCtx = document.getElementById('attendanceChart').getContext('2d'); 
+            if (attendanceCtx) { 
+                new Chart(attendanceCtx, { 
+                    type: 'doughnut', 
+                    data: { 
+                        labels: ['حەضر', 'غیاب'], 
+                        datasets: [{ 
+                            data: [85, 15], // نرخی نموونەیی 
+                            backgroundColor: [ 
+                                'rgba(28, 200, 138, 0.5)', 
+                                'rgba(231, 74, 59, 0.5)' 
+                            ], 
+                            borderColor: [ 
+                                'rgba(28, 200, 138, 1)', 
+                                'rgba(231, 74, 59, 1)' 
+                            ], 
+                            borderWidth: 1 
+                        }] 
+                    } 
+                }); 
+            } 
+        } 
+         
+        // هەناردەکردنی نمرەکان بۆ PDF 
+        function exportGradesToPdf() { 
+            const studentName = document.getElementById('gradeStudentName').value; 
+            if (!studentName) { 
+                alert('تکایە یەکەم قوتابیەک هەڵبژێرە!'); 
+                return; 
+            } 
+             
+            const student = students.find(s => s.name === studentName); 
+            if (!student) { 
+                alert('قوتابی نەدۆزرایەوە!'); 
+                return; 
+            } 
+             
+            const studentGrades = grades.filter(g => g.studentId === student.id); 
+             
+            if (studentGrades.length === 0) { 
+                alert('هیچ نمرەیەک بۆ ئەم قوتابیە نییە!'); 
+                return; 
+            } 
+             
+            // دروستکردنی ناوەڕۆکی PDF 
+            let content = ` 
+                <h1 style="text-align: center; color: #4e73df;">ڕاپۆرتی نمرەکانی قوتابی</h1> 
+                <h2 style="text-align: center;">${studentName}</h2> 
+                <hr> 
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;"> 
+                    <thead> 
+                        <tr style="background-color: #4e73df; color: white;"> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">دەرس</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">15ی یەکەم</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">5ی یەکەم</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">15ی دووەم</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">5ی دووەم</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">کۆتایی</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">کۆی گشتی</th> 
+                        </tr> 
+                    </thead> 
+                    <tbody> 
+            `; 
+             
+            studentGrades.forEach(grade => { 
+                content += ` 
+                    <tr> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${grade.courseName}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.first15Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.first5Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.second15Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.second5Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.final60Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${grade.totalGrade}</td> 
+                    </tr> 
+                `; 
+            }); 
+             
+            content += ` 
+                    </tbody> 
+                </table> 
+                <div style="margin-top: 20px; text-align: left;"> 
+                    <p><strong>بەرواری هەناردن:</strong> ${new Date().toLocaleDateString('ar-KU')}</p> 
+                </div> 
+            `; 
+             
+            // دروستکردنی PDF 
+            const { jsPDF } = window.jspdf; 
+            const doc = new jsPDF(); 
+             
+            // زیادکردنی ناوەڕۆک بە شێوازی HTML 
+            doc.html(content, { 
+                callback: function(doc) { 
+                    doc.save(`نمرەکانی_${studentName}.pdf`); 
+                }, 
+                x: 10, 
+                y: 10, 
+                width: 190, 
+                windowWidth: 800 
+            }); 
+        } 
+         
+        // هەناردەکردنی نمرەکانی قوتابی بۆ PDF 
+        function exportStudentGradesToPdf() { 
+            const studentName = document.getElementById('studentDetailName').textContent; 
+            if (!studentName || studentName === '') { 
+                alert('هیچ قوتابیەک هەڵنەبژێردراوە!'); 
+                return; 
+            } 
+             
+            const student = students.find(s => s.name === studentName); 
+            if (!student) { 
+                alert('قوتابی نەدۆزرایەوە!'); 
+                return; 
+            } 
+             
+            const studentGrades = grades.filter(g => g.studentId === student.id); 
+             
+            if (studentGrades.length === 0) { 
+                alert('هیچ نمرەیەک بۆ ئەم قوتابیە نییە!'); 
+                return; 
+            } 
+             
+            // دروستکردنی ناوەڕۆکی PDF 
+            let content = ` 
+                <div style="text-align: center;"> 
+                    <h1 style="color: #4e73df;">ڕاپۆرتی نمرەکانی قوتابی</h1> 
+                    <h2>${studentName}</h2> 
+                    <p><strong>ناوی باوک:</strong> ${student.fatherName}</p> 
+                    <p><strong>قۆناغ:</strong> ${student.level} | <strong>گروپ:</strong> ${student.group}</p> 
+                </div> 
+                <hr> 
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;"> 
+                    <thead> 
+                        <tr style="background-color: #4e73df; color: white;"> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">دەرس</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">15ی یەکەم</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">5ی یەکەم</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">15ی دووەم</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">5ی دووەم</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">کۆتایی</th> 
+                            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">کۆی گشتی</th> 
+                        </tr> 
+                    </thead> 
+                    <tbody> 
+            `; 
+             
+            let totalSum = 0; 
+            studentGrades.forEach(grade => { 
+                totalSum += grade.totalGrade; 
+                content += ` 
+                    <tr> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${grade.courseName}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.first15Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.first5Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.second15Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.second5Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${grade.final60Grade}</td> 
+                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${grade.totalGrade}</td> 
+                    </tr> 
+                `; 
+            }); 
+             
+            const average = totalSum / studentGrades.length; 
+             
+            content += ` 
+                    </tbody> 
+                </table> 
+                <div style="margin-top: 20px; padding: 10px; background-color: #f8f9fc; border-radius: 5px;"> 
+                    <p style="text-align: center;"><strong>نمرەی تێکڕا:</strong> ${average.toFixed(2)}</p> 
+                    <p style="text-align: center;"><strong>کۆی نمرەکان:</strong> ${studentGrades.length}</p> 
+                </div> 
+                <div style="margin-top: 20px; text-align: left;"> 
+                    <p><strong>بەرواری هەناردن:</strong> ${new Date().toLocaleDateString('ar-KU')}</p> 
+                </div> 
+            `; 
+             
+            // دروستکردنی PDF 
+            const { jsPDF } = window.jspdf; 
+            const doc = new jsPDF(); 
+             
+            // زیادکردنی ناوەڕۆک بە شێوازی HTML 
+            doc.html(content, { 
+                callback: function(doc) { 
+                    doc.save(`نمرەکانی_${studentName}.pdf`); 
+                }, 
+                x: 10, 
+                y: 10, 
+                width: 190, 
+                windowWidth: 800 
+            }); 
+        } 
+         
+        // تەوگڵی تەنیشت 
+        document.getElementById('sidebarToggle').addEventListener('click', function() { 
+            document.getElementById('sidebarMenu').classList.toggle('collapse'); 
+        }); 
+    </script> 
+</body> 
+</html>
