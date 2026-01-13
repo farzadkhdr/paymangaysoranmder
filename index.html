@@ -3,7 +3,7 @@
 <head> 
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>سیستەمی پەیمانگای اسۆران</title> 
+    <title>سیستەمی پەیمانگای سۆران</title> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
@@ -187,56 +187,7 @@
             background: rgb(243, 239, 239); 
             border-radius: 10px; 
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); 
-        }
-
-        /* API Status Styles */
-        .api-status {
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            display: inline-block;
-        }
-        
-        .api-active {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .api-inactive {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        /* API Log Styles */
-        .api-log-container {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #dee2e6;
-            border-radius: 0.25rem;
-            padding: 10px;
-            background-color: #f8f9fa;
-            font-family: monospace;
-            font-size: 0.85rem;
-        }
-        
-        .log-entry {
-            padding: 5px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .log-success {
-            color: #198754;
-        }
-        
-        .log-error {
-            color: #dc3545;
-        }
-        
-        .log-info {
-            color: #0dcaf0;
-        }
+        } 
     </style> 
 </head> 
 <body> 
@@ -271,12 +222,6 @@
                     پەیمانگای سۆران 
                 </a> 
                 <ul class="navbar-nav ms-auto"> 
-                    <li class="nav-item"> 
-                        <span class="nav-link" id="apiStatus">
-                            <i class="fas fa-circle me-1" style="color: #28a745;"></i>
-                            API چالاکە
-                        </span> 
-                    </li> 
                     <li class="nav-item dropdown"> 
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"> 
                             <i class="fas fa-user-circle fa-fw"></i> 
@@ -344,14 +289,6 @@
                     <div id="dashboardSection" class="section active"> 
                         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"> 
                             <h1 class="h2">داشبۆرد</h1> 
-                            <div class="btn-toolbar mb-2 mb-md-0">
-                                <div class="btn-group me-2">
-                                    <span class="api-status api-active">
-                                        <i class="fas fa-satellite-dish me-1"></i>
-                                        API چالاکە
-                                    </span>
-                                </div>
-                            </div>
                         </div> 
                          
                         <div class="row"> 
@@ -447,25 +384,7 @@
                                     </div> 
                                 </div> 
                             </div> 
-                        </div>
-
-                        <!-- API Log Section -->
-                        <div class="card mb-4">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <span>
-                                    <i class="fas fa-history me-1"></i>
-                                    لۆگی API
-                                </span>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="clearApiLog()">
-                                    <i class="fas fa-trash"></i> پاککردنەوە
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <div class="api-log-container" id="apiLog">
-                                    <!-- API logs will appear here -->
-                                </div>
-                            </div>
-                        </div>
+                        </div> 
                     </div> 
                      
                     <!-- بەشی قوتابیان --> 
@@ -846,45 +765,7 @@
                                         </div> 
                                         <button class="btn btn-primary" id="restoreBtn">خوێندنەوەی بەکەپ</button> 
                                     </div> 
-                                </div>
-
-                                <!-- API Control Panel -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-satellite-dish me-2"></i>
-                                        کۆنترۆڵی API
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="mb-3">
-                                            <label class="form-label">دۆخی API</label>
-                                            <div class="api-status api-active w-100 text-center">
-                                                <i class="fas fa-circle me-1"></i>
-                                                API چالاکە - چاوەڕێی داواکاریەکان
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">ژمارەی داواکاریەکان</label>
-                                            <div class="text-center">
-                                                <h3 id="apiRequestCount">0</h3>
-                                                <small class="text-muted">داواکاریە وەرگیراوەکان</small>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="apiEndpoint" class="form-label">ناونیشانی API</label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" id="apiEndpoint" 
-                                                       value="/api/backup" readonly>
-                                                <button class="btn btn-outline-secondary" type="button" 
-                                                        onclick="copyApiEndpoint()">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-info w-100" onclick="testApiConnection()">
-                                            <i class="fas fa-plug me-2"></i>تاقیکردنەوەی پەیوەندی API
-                                        </button>
-                                    </div>
-                                </div>
+                                </div> 
  
                                 <div class="card mb-4"> 
                                     <div class="card-header"> 
@@ -917,14 +798,79 @@
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null; 
         let editingStudentId = null; 
         let editingGradeId = null; 
-        
-        // API Tracking
-        let apiRequestCount = 0;
-        let apiLog = JSON.parse(localStorage.getItem('apiLog')) || [];
          
         // پاسوۆردی سەرەکی 
         const systemPassword = "ashna1212"; 
         const systemUsername = "ashna"; 
+
+        // زیادکردنی فەنکشنی handleBackupRequest کە پێویستە
+        window.handleBackupRequest = function(data) {
+            console.log("وەرگرتنی داواکاری بەکەپ (API):", data);
+            
+            let result = {
+                success: true,
+                message: "بەکەپ بە سەرکەوتوویی وەرگیرا",
+                importedStudents: 0,
+                importedAttendance: 0,
+                updatedAttendance: 0
+            };
+            
+            // زیادکردنی قوتابیە نوێیەکان
+            if (data.students && Array.isArray(data.students)) {
+                data.students.forEach(newStudent => {
+                    if (!students.find(s => s.id === newStudent.id)) {
+                        students.push(newStudent);
+                        result.importedStudents++;
+                    }
+                });
+            }
+            
+            // زیادکردنی غیابە نوێیەکان
+            if (data.attendance && Array.isArray(data.attendance)) {
+                data.attendance.forEach(newAttendance => {
+                    const existingStudent = students.find(s => s.id === newAttendance.studentId);
+                    
+                    if (existingStudent) {
+                        const existingAttendanceIndex = attendance.findIndex(a =>  
+                            a.id === newAttendance.id ||  
+                            (a.studentId === newAttendance.studentId && 
+                             a.date === newAttendance.date && 
+                             a.courseName === newAttendance.course)
+                        );
+                        
+                        if (existingAttendanceIndex === -1) {
+                            attendance.push({
+                                id: newAttendance.id,
+                                studentId: newAttendance.studentId,
+                                studentName: existingStudent.name,
+                                courseName: newAttendance.course || newAttendance.courseName,
+                                date: newAttendance.date,
+                                hours: newAttendance.present === false ? (newAttendance.hours || 1) : 0
+                            });
+                            result.importedAttendance++;
+                        } else {
+                            attendance[existingAttendanceIndex] = {
+                                ...attendance[existingAttendanceIndex],
+                                courseName: newAttendance.course || newAttendance.courseName,
+                                date: newAttendance.date,
+                                hours: newAttendance.present === false ? (newAttendance.hours || 1) : 0
+                            };
+                            result.updatedAttendance++;
+                        }
+                    }
+                });
+            }
+            
+            // پاشەکەوتکردنی زانیاریە نوێیەکان
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('attendance', JSON.stringify(attendance));
+            
+            // نوێکردنەوەی لیستەکان
+            displayStudentsList();
+            updateDashboard();
+            
+            return result;
+        };
          
         // چێککردنی چوونەژوورەوە 
         document.addEventListener('DOMContentLoaded', function() { 
@@ -937,294 +883,8 @@
              
             // زیادکردنی Event Listeners 
             setupEventListeners(); 
-            updateDashboard();
-            
-            // Setup API
-            setupBackupAPI();
-            displayApiLog();
-            updateApiStatus(); 
+            updateDashboard(); 
         }); 
-        
-        // ناوەڕۆکی زیادکراو بۆ API
-        function setupBackupAPI() {
-            // دروستکردنی API endpoint بۆ وەرگرتنی POST requests
-            window.handleBackupRequest = async function(requestData) {
-                try {
-                    apiRequestCount++;
-                    document.getElementById('apiRequestCount').textContent = apiRequestCount;
-                    
-                    const logEntry = {
-                        timestamp: new Date().toISOString(),
-                        type: 'request',
-                        status: 'received',
-                        message: 'داواکارییەکی نوێی بەکەپ وەرگیرا'
-                    };
-                    
-                    apiLog.unshift(logEntry);
-                    if (apiLog.length > 50) apiLog = apiLog.slice(0, 50);
-                    localStorage.setItem('apiLog', JSON.stringify(apiLog));
-                    displayApiLog();
-                    
-                    // Process the backup data
-                    const data = requestData;
-                    let importedStudents = 0;
-                    let importedAttendance = 0;
-                    let updatedAttendance = 0;
-                    let errors = [];
-                    
-                    // زیادکردنی قوتابیە نوێیەکان
-                    if (data.students && Array.isArray(data.students)) {
-                        data.students.forEach(newStudent => {
-                            try {
-                                const existingStudentIndex = students.findIndex(s => s.id === newStudent.id);
-                                
-                                if (existingStudentIndex === -1) {
-                                    // قوتابی نوێ
-                                    students.push(newStudent);
-                                    importedStudents++;
-                                } else {
-                                    // نوێکردنەوەی قوتابیەکانی پێشوو
-                                    students[existingStudentIndex] = {
-                                        ...students[existingStudentIndex],
-                                        ...newStudent,
-                                        id: students[existingStudentIndex].id // دڵنیابوون لەوەی ID نەگۆڕێت
-                                    };
-                                }
-                            } catch (error) {
-                                errors.push(`هەڵە لە قوتابی ${newStudent.name || 'نەناسراو'}: ${error.message}`);
-                            }
-                        });
-                    }
-                    
-                    // زیادکردنی غیابەکان
-                    if (data.attendance && Array.isArray(data.attendance)) {
-                        data.attendance.forEach(newAttendance => {
-                            try {
-                                // پشکنین بۆ دۆزینەوەی قوتابی
-                                const existingStudent = students.find(s => s.id === newAttendance.studentId);
-                                
-                                if (existingStudent) {
-                                    // پشکنین بۆ دۆزینەوەی غیابی هاوشێوە
-                                    const existingAttendanceIndex = attendance.findIndex(a => 
-                                        a.id === newAttendance.id || 
-                                        (a.studentId === newAttendance.studentId && 
-                                         a.date === newAttendance.date && 
-                                         (a.courseName === newAttendance.course || 
-                                          a.course === newAttendance.course ||
-                                          a.courseName === newAttendance.courseName))
-                                    );
-                                    
-                                    if (existingAttendanceIndex === -1) {
-                                        // زیادکردنی غیابی نوێ
-                                        attendance.push({
-                                            id: newAttendance.id || `imported-${Date.now()}-${Math.random()}`,
-                                            studentId: newAttendance.studentId,
-                                            studentName: existingStudent.name,
-                                            courseName: newAttendance.course || newAttendance.courseName || 'وانەی دیارینەکراو',
-                                            date: newAttendance.date,
-                                            hours: newAttendance.present === false ? (newAttendance.hours || 1) : 0,
-                                            present: newAttendance.present !== undefined ? newAttendance.present : false,
-                                            photo: newAttendance.photo || null,
-                                            source: newAttendance.sourceSystem || data.sourceSystem || 'سیستەمی مامۆستا',
-                                            timestamp: new Date().toISOString(),
-                                            autoMarked: newAttendance.autoMarked || false
-                                        });
-                                        importedAttendance++;
-                                    } else {
-                                        // نوێکردنەوەی غیابی هەبوو
-                                        attendance[existingAttendanceIndex] = {
-                                            ...attendance[existingAttendanceIndex],
-                                            courseName: newAttendance.course || newAttendance.courseName || attendance[existingAttendanceIndex].courseName,
-                                            date: newAttendance.date,
-                                            hours: newAttendance.present === false ? (newAttendance.hours || 1) : 0,
-                                            present: newAttendance.present !== undefined ? newAttendance.present : attendance[existingAttendanceIndex].present,
-                                            photo: newAttendance.photo || attendance[existingAttendanceIndex].photo,
-                                            source: newAttendance.sourceSystem || data.sourceSystem || 'سیستەمی مامۆستا',
-                                            timestamp: new Date().toISOString(),
-                                            autoMarked: newAttendance.autoMarked || attendance[existingAttendanceIndex].autoMarked
-                                        };
-                                        updatedAttendance++;
-                                    }
-                                } else {
-                                    errors.push(`قوتابی نەدۆزرایەوە بۆ غیاب ID: ${newAttendance.studentId}`);
-                                }
-                            } catch (error) {
-                                errors.push(`هەڵە لە غیاب: ${error.message}`);
-                            }
-                        });
-                    }
-                    
-                    // پاشەکەوتکردنی زانیاریە نوێیەکان
-                    localStorage.setItem('students', JSON.stringify(students));
-                    localStorage.setItem('attendance', JSON.stringify(attendance));
-                    
-                    // نیشاندانی زانیاری نوێکان
-                    displayStudentsList();
-                    updateDashboard();
-                    
-                    // لۆگی سەرکەوتوویی
-                    const successLog = {
-                        timestamp: new Date().toISOString(),
-                        type: 'success',
-                        status: 'processed',
-                        message: `بەکەپ بە سەرکەوتوویی پێشەوە چوو. قوتابی: ${importedStudents}, غیاب: ${importedAttendance}, نوێکردنەوە: ${updatedAttendance}`,
-                        details: {
-                            importedStudents,
-                            importedAttendance,
-                            updatedAttendance,
-                            totalStudents: students.length,
-                            totalAttendance: attendance.length
-                        }
-                    };
-                    
-                    apiLog.unshift(successLog);
-                    if (apiLog.length > 50) apiLog = apiLog.slice(0, 50);
-                    localStorage.setItem('apiLog', JSON.stringify(apiLog));
-                    displayApiLog();
-                    
-                    // دەگەڕێنەوە وەڵامێکی JSON
-                    return {
-                        success: true,
-                        message: 'بەکەپ بە سەرکەوتوویی وەرگیرا و خەزن کرا',
-                        importedStudents: importedStudents,
-                        importedAttendance: importedAttendance,
-                        updatedAttendance: updatedAttendance,
-                        totalStudents: students.length,
-                        totalAttendance: attendance.length,
-                        errors: errors.length > 0 ? errors : null,
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                } catch (error) {
-                    console.error('هەڵە لە وەرگرتنی باکەپ:', error);
-                    
-                    // لۆگی هەڵە
-                    const errorLog = {
-                        timestamp: new Date().toISOString(),
-                        type: 'error',
-                        status: 'failed',
-                        message: `هەڵە لە وەرگرتنی باکەپ: ${error.message}`,
-                        error: error.toString()
-                    };
-                    
-                    apiLog.unshift(errorLog);
-                    if (apiLog.length > 50) apiLog = apiLog.slice(0, 50);
-                    localStorage.setItem('apiLog', JSON.stringify(apiLog));
-                    displayApiLog();
-                    
-                    return {
-                        success: false,
-                        message: `هەڵە لە وەرگرتنی باکەپ: ${error.message}`,
-                        timestamp: new Date().toISOString()
-                    };
-                }
-            };
-            
-            console.log('✅ API endpoint بۆ باکەپ سازکرا - چاوەڕێی داواکاریەکان');
-        }
-        
-        // نیشاندانی لۆگی API
-        function displayApiLog() {
-            const logContainer = document.getElementById('apiLog');
-            if (!logContainer) return;
-            
-            logContainer.innerHTML = '';
-            
-            if (apiLog.length === 0) {
-                logContainer.innerHTML = '<div class="text-center text-muted">هیچ لۆگێک بوونی نییە</div>';
-                return;
-            }
-            
-            apiLog.forEach(log => {
-                const logEntry = document.createElement('div');
-                logEntry.className = 'log-entry';
-                
-                const time = new Date(log.timestamp).toLocaleTimeString('ku-IQ');
-                let logClass = '';
-                let icon = '';
-                
-                switch(log.type) {
-                    case 'success':
-                        logClass = 'log-success';
-                        icon = '✅';
-                        break;
-                    case 'error':
-                        logClass = 'log-error';
-                        icon = '❌';
-                        break;
-                    case 'request':
-                        logClass = 'log-info';
-                        icon = '📥';
-                        break;
-                    default:
-                        logClass = 'log-info';
-                        icon = '📝';
-                }
-                
-                logEntry.innerHTML = `
-                    <div class="${logClass}">
-                        <small>${time}</small> ${icon} ${log.message}
-                        ${log.details ? `<br><small class="text-muted">قوتابی: ${log.details.importedStudents}, غیاب: ${log.details.importedAttendance}</small>` : ''}
-                    </div>
-                `;
-                
-                logContainer.appendChild(logEntry);
-            });
-        }
-        
-        // پاککردنەوەی لۆگی API
-        function clearApiLog() {
-            if (confirm('دڵنیایت دەتەوێت هەموو لۆگەکانی API پاکبکەیتەوە؟')) {
-                apiLog = [];
-                localStorage.setItem('apiLog', JSON.stringify(apiLog));
-                displayApiLog();
-                alert('لۆگەکانی API پاککرانەوە!');
-            }
-        }
-        
-        // نوێکردنەوەی دۆخی API
-        function updateApiStatus() {
-            const apiStatus = document.getElementById('apiStatus');
-            if (apiStatus) {
-                apiStatus.innerHTML = `
-                    <i class="fas fa-circle me-1" style="color: #28a745;"></i>
-                    API چالاکە (${apiRequestCount} داواکاری)
-                `;
-            }
-        }
-        
-        // کۆپیکردنی ناونیشانی API
-        function copyApiEndpoint() {
-            const endpoint = document.getElementById('apiEndpoint');
-            endpoint.select();
-            document.execCommand('copy');
-            alert('ناونیشانی API کۆپی کرا!');
-        }
-        
-        // تاقیکردنەوەی پەیوەندی API
-        async function testApiConnection() {
-            try {
-                // دروستکردنی داتای تاقیکردنەوە
-                const testData = {
-                    students: [],
-                    attendance: [],
-                    backupDate: new Date().toISOString(),
-                    sourceSystem: "تاقیکردنەوەی API",
-                    test: true
-                };
-                
-                // ناردنی داواکاری تاقیکردنەوە
-                const response = await window.handleBackupRequest(testData);
-                
-                if (response.success) {
-                    alert('✅ پەیوەندییەکەی API کار دەکات!\n\nسیستەم ئامادەیە بۆ وەرگرتنی باکەپەکان.');
-                } else {
-                    alert('❌ کێشەیەک هەیە لە پەیوەندییەکەی API.\n\nتکایە پشکنینی کۆنسۆڵی بکەرەوە.');
-                }
-            } catch (error) {
-                alert(`❌ هەڵە لە تاقیکردنەوەی API: ${error.message}`);
-            }
-        }
          
         // نیشاندانی پەڕەی چوونەژوورەوە 
         function showLoginPage() { 
@@ -1825,7 +1485,7 @@
              
             reader.readAsText(file); 
         } 
- 
+
         // خوێندنەوەی زانیاری لە سیستەمی مامۆستا 
         function importTeacherSystemBackup() { 
             const fileInput = document.getElementById('teacherBackupFile'); 
